@@ -1,10 +1,10 @@
 *** RunTest ***
 
-* Introduction:
+Introduction:
 
 More than just a script, the Scripts/RunTest.py is the pilar of a full Agile Test Driven Development process, working with different languages and well-know test frameworks.
 
-* Philosophy:
+Philosophy:
 
 The philosophy is to simplify to the max the Agile Test Driven Development process:
 - Minimizing the numbers of documents to edit
@@ -12,7 +12,7 @@ The philosophy is to simplify to the max the Agile Test Driven Development proce
 - Automatizing as max as possible
 - Re-centering the work of anyone to the essential
 
-* Key points:
+Key points:
 
 Agile/scrum based:
 - Based on User Story and iterations
@@ -38,7 +38,7 @@ Reuse well-known tools and frameworks:
   - svn
   - ...
 
-* Process details
+Process details
 
 Here is the Agile Test driven process that we follow:
 
