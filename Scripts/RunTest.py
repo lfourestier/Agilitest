@@ -61,7 +61,7 @@ result = result.xml
 
 # Main
 def main():
-    print "# RunTest #"
+#     print "# RunTest #"
     
     Log.SetLevels([Log.ERROR, Log.WARNING, Log.DEBUG])
     

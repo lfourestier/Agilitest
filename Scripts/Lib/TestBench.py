@@ -199,7 +199,8 @@ class TestBench:
     
     # Parse file of type
     def ParseFileType(self, file_name, file_type):
-        Log.Log(Log.DEBUG, "Parsing " + file_type + " file: " + str(file_name))
+        Log.Log(Log.DEBUG, "Parsing " + file_type + " file: ")
+        print(str(file_name))
         ret = ERROR
         ts = None
         tc = None
@@ -275,6 +276,11 @@ class TestBench:
         else:
             self.test_suite_dict[ts.suite] = ts
             
+        if ret == OK:
+            print("OK")
+        else:
+            print("ERROR")
+            
         return ret
     
     # Run a single test suite
@@ -294,7 +300,7 @@ class TestBench:
 
     # Run a single test case
     def RunCase(self, tc):
-        print("Running " + tc.suite.suite + "." + tc.case)
+        print(tc.suite.suite + "." + tc.case)
         
         # Check if included or excluded
         # TODO Implement
@@ -305,8 +311,12 @@ class TestBench:
             return ret
         
         if tc.test_case_result:
-            Log.Log(Log.DEBUG, "Test: " + tc.test_case_result.status)
-        
+            if tc.test_case_result.status == TestResult.FAIL:
+                print tc.test_case_result.details
+            print(tc.test_case_result.status)
+        else:
+            print("FAIL")
+                
         return ret
     
     # Stringnify the dictionary
