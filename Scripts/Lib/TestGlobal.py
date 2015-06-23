@@ -18,9 +18,7 @@ NONE_TYPE = "None" # When unknown framework
 
 # Strip string from comment stars
 def StripCommentStars(str):
-    str = re.sub(" \* ", " ", str)
-    str = re.sub("\* ", " ", str)
-    str = re.sub(" \*", " ", str)
+    str = re.sub("\n[\s\*]+", " ", str)
     return str
 
 # Strip string from white spaces

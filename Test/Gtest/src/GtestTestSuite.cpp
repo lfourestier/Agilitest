@@ -22,25 +22,27 @@ void GtestTestSuite::TearDown(void) {
 }
 
 /**
- * @test testAdd
- * Full test description
+ * @test Full test
+ * description
  * @pre preconditions
  * @post post-conditions
  * @result expected results
  * @remarks requirements,regression,system,integration,negative
+ * @priority medium
  */
 TEST_F(GtestTestSuite, testAdd)
 {
-    EXPECT_EQ(1, 0);
+	EXPECT_EQ(1, 0);
 }
 
 /**
- * @test testMultiply
- * Full test description
+ * @test Full test
+ * description
  * @pre preconditions
  * @post post-conditions
  * @result expected results
  * @remarks regression,system,integration,positive
+ * @priority medium
  */
 TEST_F(GtestTestSuite, testMultiply)
 {
@@ -48,12 +50,13 @@ TEST_F(GtestTestSuite, testMultiply)
 }
 
 /**
- * @test testPlannedButNotImplemented
- * Full test description
+ * @test Full test
+ * description
  * @pre preconditions
  * @post post-conditions
  * @result expected results
  * @remarks regression,system,integration,positive,NOT_IMPLEMENTED
+ * @priority medium
  */
 TEST_F(GtestTestSuite, testPlannedButNotImplemented)
 {

@@ -21,11 +21,13 @@ import org.junit.Test;
 public class JunitTestSuite {
 
 	/**
-	 * @test testAdd Full test description
+	 * @test Full test
+	 * description
 	 * @pre preconditions
 	 * @post post-conditions
 	 * @result expected results
 	 * @remarks regression,system,integration,negative
+	 * @priority medium
 	 */
 	@Test
 	public void testAdd() {
@@ -33,11 +35,13 @@ public class JunitTestSuite {
 	}
 
 	/**
-	 * @test testMultiply Full test description
+	 * @test Full test 
+	 * description
 	 * @pre preconditions
 	 * @post post-conditions
 	 * @result expected results
 	 * @remarks regression,system,integration,negative
+	 * @priority medium
 	 */
 	@Test
 	public void testMultiply() {
@@ -45,12 +49,13 @@ public class JunitTestSuite {
 	}
 	
 	/**
-	 * @test testPlannedButNotImplemented
-	 * Full test description
+	 * @test Full test 
+	 * description
 	 * @pre preconditions
 	 * @post post-conditions
 	 * @result expected results
 	 * @remarks regression,system,integration,positive,NOT_IMPLEMENTED
+	 * @priority medium
 	 */
 	@Test
 	public void testPlannedButNotImplemented() {

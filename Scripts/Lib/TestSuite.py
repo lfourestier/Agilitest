@@ -11,7 +11,7 @@ ERROR = TestGlobal.ERROR
 
 # Suite fields
 SUITE_DESCRIPTION_REGEXP = "@defgroup\s+(\w+)\s+(\w+)\s+(.*?)@\w+"
-SUITE_KEYWORDS_REGEXP = "@remarks\s+([\w, ]+)\s.*?@\{"
+SUITE_KEYWORDS_REGEXP = "@remarks\s+([\w, ]+)\s.*?@\w+"
 
 # Define a test suite
 class TestSuite:
@@ -25,6 +25,7 @@ class TestSuite:
     # Parsing the Suite header
     def ParseHeader(self, header):
         ret = OK
+        header += " @stop" # Required to stop the search
         m = re.search(SUITE_DESCRIPTION_REGEXP, header, re.MULTILINE|re.DOTALL)
         if m != None:
 #             Log.Log(Log.DEBUG, "Suite.description: " + m.group(0))

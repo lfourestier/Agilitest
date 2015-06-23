@@ -9,6 +9,7 @@ import Log
 from TestSuite import TestSuite
 from TestCase import TestCase
 from TestResult import TestResult
+from TestCommand import TestCommand
 import subprocess
 import shlex
 
@@ -28,22 +29,23 @@ COMMAND_COMMAND = "command"
 COMMAND_RESULT = "result"
 COMMAND_DEFAULT_RESULT = "Result.xml"
 COMMAND_DELIMITER = "@@"
-COMMAND_SUITE = "@SUITE"
-COMMAND_CASE = "@CASE"
+COMMAND_SUITE_MACRO = "@SUITE"
+COMMAND_CASE_MACRO = "@CASE"
+COMMAND_RESULT_MACRO = "@RESULT"
 
 # Reg Exp
 
-GTEST_SUITE_REGEXP = "@defgroup.*?@\{"
-GTEST_CASE_REGEXP_LIST = ["(@test.*?)TEST_F\((\w+)\s*,\s*(\w+)\)", "(@test.*?)TEST\((\w+)\s*,\s*(\w+)\)"]
+GTEST_SUITE_REGEXP = "(@defgroup.*?)@\{"
+GTEST_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?TEST_F\(\w+\s*,\s*(\w+)\)"] #, "(@test.*?)TEST\((\w+)\s*,\s*(\w+)\)"]
 
-JUNIT_SUITE_REGEXP = "@defgroup.*?@\{"
-JUNIT_CASE_REGEXP_LIST = ["(@test.*?)@Test.*?(test\w+)\s*\("]
+JUNIT_SUITE_REGEXP = "(@defgroup.*?)@\{"
+JUNIT_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?@Test.*?(test\w+)\s*\("]
 
 # The test bench class that provides test management functions
 class TestBench:
     def __init__(self, dir_list, commands, report_file, synthesis_file):
         self.dir_list = dir_list  # As list
-        self.commands = commands  # As dictionary {gtest:blabla, junit:sdfsdf, ...}
+        self.test_command = TestCommand(commands)  # As dictionary {gtest:blabla, junit:sdfsdf, ...}
         self.report_file = report_file
         self.synthesis_file = synthesis_file
         
@@ -66,22 +68,21 @@ class TestBench:
 
     # Run the test dictionary
     def Run(self):
-        ret = ERROR
-        if self.commands:
-            print("### Running...")
-            ret = self.CheckCommandsValidity()
+        print("### Running...")
+        ret = self.test_command.CheckValidity()
+        if ret != OK:
+            Log.Log(Log.ERROR, "Commands are not valid")
+            return ret
+        
+        if not self.test_suite_dict:
+            Log.Log(Log.ERROR, "No element in test dictionary")
+            return ERROR
+        
+        for suite in self.test_suite_dict:
+            ret = self.RunSuite(self.test_suite_dict[suite]) # We continue even if it fails
             if ret != OK:
-                Log.Log(Log.ERROR, "Commands are not valid")
-                return ret
-            
-#             Log.Log(Log.DEBUG, "" + repr(self.commands))
-
-            for suite in self.test_suite_dict:
-                ret = self.RunSuite(self.test_suite_dict[suite]) # We continue even if it fails
-                if ret != OK:
-                    break
-        else:
-            Log.Log(Log.ERROR, "No commands to run test")
+                Log.Log(Log.ERROR, "Run error!")
+                break
         return ret
     
     # Generate the test reports
@@ -97,57 +98,40 @@ class TestBench:
         Log.Log(Log.DEBUG, "Parsing dir: " + str(dir))
         file_list = os.listdir(dir)
         Log.Log(Log.DEBUG, "File list: " + str(file_list))
-        for file in file_list:
-            full_file = os.path.join(dir, file)
-            if os.path.isfile(full_file) and self.CheckIsTestSuiteFile(file) == OK:
-#                 Log.Log(Log.DEBUG, "Found test file: " + str(file))
-                ret = self.ParseFile(full_file)
+        for file_name in file_list:
+            full_file_name = os.path.join(dir, file_name)
+            if os.path.isfile(full_file_name) and self.CheckIsTestSuiteFile(file_name) == OK:
+#                 Log.Log(Log.DEBUG, "Found test file_name: " + str(file_name))
+                ret = self.ParseFile(full_file_name)
                 if ret != OK:
-                    Log.Log(Log.WARNING, "Error while parsing " + file)
-        return ret
-    
-    # Check commands validity
-    def CheckCommandsValidity(self):
-        ret = OK
-        command_number = 0 # At least one is required
-        for cmd in COMMAND_LIST:
-            if self.commands.has_key(cmd):
-                command_number = command_number + 1
-                if not self.commands[cmd].has_key(COMMAND_COMMAND): # Mandatory
-                    ret = ERROR
-                    break
-                if not self.commands[cmd].has_key(COMMAND_RESULT):
-                    self.commands[cmd][COMMAND_RESULT] = COMMAND_DEFAULT_RESULT
-                    Log.Log(Log.WARNING, "Forced the intermediate result file for " + cmd + " to: " + COMMAND_DEFAULT_RESULT)
-        if command_number <=0:
-            ret = ERROR
+                    Log.Log(Log.WARNING, "Error while parsing " + file_name)
         return ret
     
     # Check if the file is a test suite (Ending with TestSuite.xxx)
-    def CheckIsTestSuiteFile(self, file):
-        file_str = str(file)
+    def CheckIsTestSuiteFile(self, file_content):
+        file_str = str(file_content)
         if file_str.endswith(GTEST_EXT) or file_str.endswith(CPPUNIT_EXT) or file_str.endswith(JUNIT_EXT) or file_str.endswith(CUNIT_EXT):
             return OK 
         return ERROR
     
     # Sniff a file to detect type of test suite
-    def SniffFile(self, file):
-        if self.SniffGtest(file):
+    def SniffFile(self, file_name):
+        if self.SniffGtest(file_name):
             return TestGlobal.GTEST_TYPE
-        if self.SniffJunit(file):
+        if self.SniffJunit(file_name):
             return TestGlobal.JUNIT_TYPE
-        if self.SniffCppunit(file):
+        if self.SniffCppunit(file_name):
             return TestGlobal.CPPUNIT_TYPE
-        if self.SniffCunit(file):
+        if self.SniffCunit(file_name):
             return TestGlobal.CUNIT_TYPE
         
         return TestGlobal.NONE_TYPE
     
     # Sniff if it is Gtest
-    def SniffGtest(self, file):
+    def SniffGtest(self, file_name):
         confidence = 0
-        if file.endswith(GTEST_EXT):
-            f = open(file)
+        if file_name.endswith(GTEST_EXT):
+            f = open(file_name)
             content = f.read()
             f.close()
             if re.search("include.*gtest\.h", content):
@@ -170,10 +154,10 @@ class TestBench:
         return False
     
     # Sniff if it is Junit
-    def SniffJunit(self, file):
+    def SniffJunit(self, file_name):
         confidence = 0
-        if file.endswith(JUNIT_EXT):
-            f = open(file)
+        if file_name.endswith(JUNIT_EXT):
+            f = open(file_name)
             content = f.read()
             f.close()
             if re.search("import.*org.junit.*", content):
@@ -196,35 +180,35 @@ class TestBench:
         return False
     
     # Sniff if it is Cppunit
-    def SniffCppunit(self, file):
+    def SniffCppunit(self, file_name):
         # TODO Implement
         return False
     
     # Sniff if it is Cunit
-    def SniffCunit(self, file):
+    def SniffCunit(self, file_name):
         # TODO Implement
         return False
     
     # Parse a test suite file to find test framework type
-    def ParseFile(self, file):
+    def ParseFile(self, file_name):
         ret = OK
-        suite_type = self.SniffFile(file)
-        if suite_type != None: # Just ignore the file if suite_type is None
-            ret = self.ParseFileType(file, suite_type)
+        suite_type = self.SniffFile(file_name)
+        if suite_type != None: # Just ignore the file_name if suite_type is None
+            ret = self.ParseFileType(file_name, suite_type)
         return ret
     
     # Parse file of type
-    def ParseFileType(self, file, type):
-        Log.Log(Log.DEBUG, "Parsing " + type + " file: " + str(file))
+    def ParseFileType(self, file_name, file_type):
+        Log.Log(Log.DEBUG, "Parsing " + file_type + " file: " + str(file_name))
         ret = ERROR
         ts = None
         tc = None
         suite_regexp = None
         case_regexp_list = None
-        if type == TestGlobal.GTEST_TYPE:
+        if file_type == TestGlobal.GTEST_TYPE:
             suite_regexp = GTEST_SUITE_REGEXP
             case_regexp_list = GTEST_CASE_REGEXP_LIST
-        elif type == TestGlobal.JUNIT_TYPE:
+        elif file_type == TestGlobal.JUNIT_TYPE:
             suite_regexp = JUNIT_SUITE_REGEXP
             case_regexp_list = JUNIT_CASE_REGEXP_LIST
             # TODO Implement other framework
@@ -232,31 +216,31 @@ class TestBench:
             Log.Log(Log.ERROR, "Unknown file type in ParseFileType!")
             return ERROR
         
-        f = open(file)
+        f = open(file_name)
         content = f.read()
         f.close()
         
         # Parsing Suite description
         for m in re.finditer(suite_regexp, content, re.MULTILINE|re.DOTALL):
             if m != None and ts == None:
-#                 Log.Log(Log.DEBUG, "Suite: " + m.group(0))
                 ts = TestSuite()
-                ret = ts.ParseHeader(m.group(0))
+#                 Log.Log(Log.DEBUG, "Suite: " + TestGlobal.StripCommentStars(m.group(1)))
+                ret = ts.ParseHeader(TestGlobal.StripCommentStars(m.group(1)))
                 if ret != OK:
                     break
                 # Verify
-                suite_name = os.path.basename(file).split('.')[0]
+                suite_name = os.path.basename(file_name).split('.')[0]
                 if ts.suite != suite_name:
-                        Log.Log(Log.WARNING, "Some suite comment inconsistencies are detected in " + os.path.basename(file) + ": " + ts.suite + " != " + suite_name)
+                        Log.Log(Log.WARNING, "Some suite comment inconsistencies are detected in " + os.path.basename(file_name) + ": " + ts.suite + " != " + suite_name)
             else:
                 ret = ERROR
                 break
         
         if ret != OK:
-            Log.Log(Log.ERROR, "Invalid suite format in " + os.path.basename(file))
+            Log.Log(Log.ERROR, "Invalid suite format in " + os.path.basename(file_name))
             return ret
         
-        ts.type = type
+        ts.type = file_type
         ts.test_case_dict = dict()
         
         # Parsing Case descriptions
@@ -264,21 +248,16 @@ class TestBench:
         for case_regexp in case_regexp_list:
             for m in re.finditer(case_regexp, content, re.MULTILINE|re.DOTALL):
                 if m != None:
-#                     Log.Log(Log.DEBUG, "Case: " + m.group(1))
                     tc = TestCase()
-                    ret = tc.ParseHeader(m.group(1))
+                    tc.suite = ts # Add a backward link to the suite as well
+                    tc.case =  m.group(2)
+#                     Log.Log(Log.DEBUG, "Case: " + TestGlobal.StripCommentStars(m.group(1)))
+                    ret = tc.ParseHeader(TestGlobal.StripCommentStars(m.group(1)))
                     if ret == OK:
-                        # Verify
-                        if type == TestGlobal.GTEST_TYPE and (ts.suite != m.group(2) or tc.case !=  m.group(3)):
-                            Log.Log(Log.WARNING, "Some test comment inconsistencies are detected in " + os.path.basename(file) + ": " + m.group(2) + "." + m.group(3) + " != " + ts.suite + "." + tc.case)
-                        if type == TestGlobal.JUNIT_TYPE and tc.case !=  m.group(2):
-                            Log.Log(Log.WARNING, "Some test comment inconsistencies are detected in " + os.path.basename(file) + ": " + m.group(2) + " != " + tc.case)
-                            
                         # Add tc into ts
                         if tc.case in ts.test_case_dict:
                             Log.Log(Log.WARNING, "Test case " + tc.case + " duplicated in " + ts.suite + ". Test case ignored!")
                         else:
-                            tc.suite = ts # Add a backward link to the suite as well
                             ts.test_case_dict[tc.case] = tc
                     else:
                         Log.Log(Log.WARNING, "Impossible to parse header: " + m.group(1))
@@ -302,61 +281,34 @@ class TestBench:
     def RunSuite(self, ts):
         Log.Log(Log.DEBUG, "Running " + ts.type + " suite: " + ts.suite)
         ret = OK
-        suite_commands = None
         
         # Check if included or excluded
         # TODO Implement
         
-        # Check if we have the suite commands for it
-        if self.commands.has_key(ts.type):
-            suite_commands = self.commands[ts.type][COMMAND_COMMAND]
-            
-        if not suite_commands:
-            Log.Log(Log.WARNING, "Do not have command for " + ts.type + " suites.")
-            return ERROR
-        
-        # Substitute the suite name in the command
-        suite_commands = re.sub(COMMAND_SUITE, ts.suite, suite_commands)
-        
         # Then run the cases    
         for case in ts.test_case_dict:
-            ret = self.RunCase(ts.test_case_dict[case], suite_commands)
+            ret = self.RunCase(ts.test_case_dict[case])
             if ret != OK:
                 break
         return ret
 
     # Run a single test case
-    def RunCase(self, tc, commands):
+    def RunCase(self, tc):
         print("Running " + tc.suite.suite + "." + tc.case)
-        ret = OK
         
         # Check if included or excluded
         # TODO Implement
         
-        # Substitute the case name in the command
-        case_commands = re.sub(COMMAND_CASE, tc.case, commands)
+        # Execute
+        ret = self.test_command.ExecuteTest(tc)
+        if ret != OK:
+            return ret
         
-        # Run
-        ret = self.RunCommands(case_commands)
+        if tc.test_case_result:
+            Log.Log(Log.DEBUG, "Test: " + tc.test_case_result.status)
         
         return ret
     
-    # Run commands for the test case
-    def RunCommands(self, commands):
-        ret = OK
-        for cmd in commands.split(COMMAND_DELIMITER):
-            Log.Log(Log.DEBUG, "Executing: " + cmd)
-            args = shlex.split(cmd)
-            output = ""
-            try:
-                output = subprocess.check_output(args)
-            except subprocess.CalledProcessError as e:
-                output = e.output
-            except:
-                ret = ERROR
-            Log.Log(Log.DEBUG, "" + str(output))
-        return ret, output
-
     # Stringnify the dictionary
     def TestSuiteDictionaryToString(self):
         s = ""

@@ -141,5 +141,4 @@ if __name__ == "__main__":
     import TestGlobal
     import Log
     from TestBench import TestBench
-    from TestCommand import TestCommand
     sys.exit(main())
