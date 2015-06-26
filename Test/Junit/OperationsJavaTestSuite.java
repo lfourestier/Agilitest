@@ -54,7 +54,7 @@ public class OperationsJavaTestSuite {
 	 * @pre preconditions
 	 * @post post-conditions
 	 * @result expected results
-	 * @remarks regression,system,integration,positive,NOT_IMPLEMENTED
+	 * @remarks regression,system,integration,positive,NOT_RUN
 	 * @priority medium
 	 */
 	@Test

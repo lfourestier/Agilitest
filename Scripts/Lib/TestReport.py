@@ -18,7 +18,7 @@ REPORT_CSV_HEADER = "Suite;Case;Description;Priority;Type;Keywords;Preconditions
 
 SYNTHESIS_CSV_HEADER = "Time;Specified;Run;Pass;Fail;Duration;"
 
-# Define a test status for ONE case
+# Define a test report
 class TestReport:
     
     def __init__(self, suite_dict):

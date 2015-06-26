@@ -56,7 +56,7 @@ TEST_F(OperationsCppTestSuite, testMultiply)
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks regression,system,integration,positive,NOT_IMPLEMENTED
+ * @remarks regression,system,integration,positive,NOT_RUN
  * @priority medium
  */
 TEST_F(OperationsCppTestSuite, testPlannedButNotImplemented)
