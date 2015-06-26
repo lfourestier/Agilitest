@@ -1,17 +1,19 @@
-# Author Luc Fourestier (luc.fourestier@gmail.com)
+# Free to use
 #
 
 import os
 import os.path
 import re
-import TestGlobal
+import subprocess
+import shlex
+
 import Log
+import TestGlobal
 from TestSuite import TestSuite
 from TestCase import TestCase
 from TestResult import TestResult
+from TestReport import TestReport
 from TestCommand import TestCommand
-import subprocess
-import shlex
 
 # Constant
 OK = TestGlobal.OK
@@ -63,7 +65,7 @@ class TestBench:
                     break
                 
         if ret == OK:
-            Log.Log(Log.DEBUG, "Parse result: " + self.TestSuiteDictionaryToString())
+            Log.Log(Log.DEBUG, "Parsing results: " + self.TestSuiteDictionaryToString())
         return ret
 
     # Run the test dictionary
@@ -83,20 +85,37 @@ class TestBench:
             if ret != OK:
                 Log.Log(Log.ERROR, "Run error!")
                 break
+            
+        if ret == OK:
+            Log.Log(Log.DEBUG, "Running results: " + self.TestSuiteDictionaryToString())
         return ret
     
     # Generate the test reports
     def GenerateReports(self):
         ret = OK
         print("### Generating reports...")
-        # TODO implement
+        tr = TestReport(self.test_suite_dict)
+        if self.report_file and self.report_file.endswith(".csv"):
+            print("Test report: " + self.report_file)
+            ret = tr.CreateCsvReport(self.report_file)
+        if ret != OK:
+            return ret
+        print("OK")   
+        if self.synthesis_file:
+            print("Test synthesis: " + self.synthesis_file)
+            ret = tr.UpdateSynthesisReport(self.synthesis_file) 
+        if ret == OK:
+            print("OK")   
         return ret
     
     # Parse a directory to find test suite files
     def ParseDirectory(self, dir):
         ret = ERROR
         Log.Log(Log.DEBUG, "Parsing dir: " + str(dir))
-        file_list = os.listdir(dir)
+        try:
+            file_list = os.listdir(dir)
+        except:
+            return ERROR
         Log.Log(Log.DEBUG, "File list: " + str(file_list))
         for file_name in file_list:
             full_file_name = os.path.join(dir, file_name)

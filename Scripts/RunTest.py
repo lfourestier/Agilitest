@@ -1,4 +1,4 @@
-# Author Luc Fourestier (luc.fourestier@gmail.com)
+# Free to use
 #
 # RunTest -d Cppunit,Junit,Gtest,Cunit -c Commands.cfg -r TestReport.csv -s TestsSynthesis.csv
 
@@ -63,7 +63,7 @@ result = result.xml
 def main():
 #     print "# RunTest #"
     
-    Log.SetLevels([Log.ERROR, Log.WARNING, Log.DEBUG])
+#     Log.SetLevels([Log.ERROR, Log.WARNING, Log.DEBUG])
     
     # Parse options
     parser = optparse.OptionParser()
@@ -80,12 +80,8 @@ def main():
                       dest="report", help="Specify the test report file where to write back the results in CSV format.",
                       action="store", default='TestReport.csv');
 
-    parser.add_option("-i", "--include",
-                      dest="include", help="Specify the tests and suites to be ran, based on keywords (See @remarks). ex: \"regression,integration\"",
-                      action="store");
-
-    parser.add_option("-x", "--exclude",
-                      dest="exclude", help="Specify the tests and suites NOT to be ran, based on keywords (See @remarks). ex: \"NOT_IMPLEMENTED\"",
+    parser.add_option("-f", "--filter",
+                      dest="filter", help="Specify the tests and suites to be ran or not, based on keywords (See @remarks). ex: \"regression,integration\"",
                       action="store");
 
     parser.add_option("-s", "--synthesis",
@@ -132,6 +128,9 @@ def main():
     
     # Run tests
     bench.Run()
+    
+    # Generate reports
+    bench.GenerateReports()
 
     return OK
     

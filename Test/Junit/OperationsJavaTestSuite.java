@@ -1,10 +1,10 @@
 /**
- * @file JunitTestSuite.java
+ * @file OperationsJavaTestSuite.java
  * @author John Doe
  * @date 2013
  * @copyright John Doe
  *
- * @defgroup JunitTestSuite JunitTestSuite
+ * @defgroup OperationsJavaTestSuite OperationsJavaTestSuite
  * This is a junit test suite.
  * @remarks regression,system
  *  @{
@@ -18,7 +18,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class JunitTestSuite {
+public class OperationsJavaTestSuite {
 
 	/**
 	 * @test Full test

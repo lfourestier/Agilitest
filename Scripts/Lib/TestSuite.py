@@ -1,4 +1,4 @@
-# Author Luc Fourestier (luc.fourestier@gmail.com)
+# Free to use
 #
 
 import re

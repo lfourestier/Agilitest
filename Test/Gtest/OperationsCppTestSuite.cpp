@@ -1,50 +1,51 @@
 /**
- * @file GtestTestSuite.cpp
+ * @file OperationsCppTestSuite.cpp
  * @author John Doe
  * @date 2013
  * @copyright John Doe
  *
- * @defgroup GtestTestSuite GtestTestSuite
+ * @defgroup OperationsCppTestSuite OperationsCppTestSuite
  * This test suite is about.
  * Any details
  * @remarks regression,system
  * @{
  */
 
-#include "GtestTestSuite.h"
+#include <OperationsCppTestSuite.h>
 
-void GtestTestSuite::SetUp(void) {
+void OperationsCppTestSuite::SetUp(void) {
 
 }
 
-void GtestTestSuite::TearDown(void) {
+void OperationsCppTestSuite::TearDown(void) {
 
 }
 
 /**
  * @test Full test
- * description
+ * description of testAdd
  * @pre preconditions
  * @post post-conditions
  * @result expected results
  * @remarks requirements,regression,system,integration,negative
  * @priority medium
  */
-TEST_F(GtestTestSuite, testAdd)
+TEST_F(OperationsCppTestSuite, testAdd)
 {
+	sleep(1);
 	EXPECT_EQ(1, 0);
 }
 
 /**
  * @test Full test
- * description
+ * description of testMultiply
  * @pre preconditions
  * @post post-conditions
  * @result expected results
  * @remarks regression,system,integration,positive
  * @priority medium
  */
-TEST_F(GtestTestSuite, testMultiply)
+TEST_F(OperationsCppTestSuite, testMultiply)
 {
     EXPECT_EQ(1, 1);
 }
@@ -58,7 +59,7 @@ TEST_F(GtestTestSuite, testMultiply)
  * @remarks regression,system,integration,positive,NOT_IMPLEMENTED
  * @priority medium
  */
-TEST_F(GtestTestSuite, testPlannedButNotImplemented)
+TEST_F(OperationsCppTestSuite, testPlannedButNotImplemented)
 {
     EXPECT_EQ(1, 1);
 }

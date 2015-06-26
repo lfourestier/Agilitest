@@ -1,4 +1,4 @@
-# Author Luc Fourestier (luc.fourestier@gmail.com)
+# Free to use
 #
 
 import re
@@ -47,7 +47,7 @@ class TestCase:
             n = re.search(CASE_POST_REGEXP, header, re.MULTILINE|re.DOTALL)
             if n != None:
 #                 Log.Log(Log.DEBUG, "case.post: " + n.group(0))
-                self.preconditions = n.group(1)
+                self.postconditions = n.group(1)
                 
             n = re.search(CASE_RESULT_REGEXP, header, re.MULTILINE|re.DOTALL)
             if n != None:
@@ -79,6 +79,8 @@ class TestCase:
         s += "\n\tExpected: " + str(self.expected)
         s += "\n\tKeywords: " + str(self.keywords)
         s += "\n\tPriority: " + str(self.priority)
+        if self.test_case_result:
+            s += self.test_case_result.ToString()
         return s
     
     

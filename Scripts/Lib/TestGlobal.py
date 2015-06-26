@@ -1,4 +1,4 @@
-# Author Luc Fourestier (luc.fourestier@gmail.com)
+# Free to use
 #
 
 import re
@@ -24,6 +24,11 @@ def StripCommentStars(str):
 # Strip string from white spaces
 def StripWhiteSpaces(str):
     str = re.sub("\S", "", str)
+    return str
+
+# Strip string from white spaces
+def StripCarriageReturn(str):
+    str = re.sub("[\r\n]+", " ", str)
     return str
 
 
