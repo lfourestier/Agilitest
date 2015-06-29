@@ -8,6 +8,40 @@ It can be called from a CI build system such as Jenkins to insure that any chang
 
 No need to maintain test specifications files, test sources, test reports, test synthesis anymore. It does it for you!
 
+## Licence
+
+Free to use at your own responsibility.
+
+## Get started
+
+For the impatient.
+
+- Clone the repo 
+- Build Test/Gtest/main.cpp, Test/Gtest/OperationsCppTestSuite.cpp and the Test/Gtest/Gtest/ directory (Google test framework) to get a Gtest app up and running.
+- Adapt Test/Commands.cfg to the location of your Gtest executable:
+ - Adapt that line: "<BinaryLocation>/<GtestExe> --gtest_filter=@SUITE.@CASE --gtest_output=xml:@RESULT"
+- Go to Scripts/
+- call "python RunTest.py -d ../Test/Gtest,../Test/Junit -c ../Test/Commands.cfg -r ../Test/TestReport.csv -s ../Test/TestSynthesis.csv"
+- check the result files:
+ - Test/TestReport.csv
+ - Test/TestSynthesis.csv
+ 
+For more:
+- "python RunTest.py -h"
+
+## Project content
+
+The project directories are made as if it was a normal C/C++ or java project on which you would run RunTest.
+- README.md is that file
+- Doxyfile is the doxygen config file for the test documentation generation
+- Doc/
+ * html/ contains the result of doxygen ran on the Test/ directory (See Doxyfile)
+ * Mgt/ contains interesting process documents as the "Iteration Documentation" which explains this test process and a bit more (Free for you own info)
+- Scripts/ contains the RunTest.py and its modules
+ * Lib/ contains the modules used by RunTest.py
+- Src/ contains fake source code that will be used as source under test.
+- Test/ contains all the test framework templates compatible with RunTest.py and that you can copy. 
+
 ## Agile Test Driven Methodology (ATDM)
 
 Agile Test Driven Methodology is simple: "You define your User Story (US) acceptance tests before any anything else in your US lifecycle". 

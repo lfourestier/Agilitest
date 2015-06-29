@@ -117,6 +117,7 @@ class TestBench:
         except:
             return ERROR
         Log.Log(Log.DEBUG, "File list: " + str(file_list))
+        found_file = 0
         for file_name in file_list:
             full_file_name = os.path.join(dir, file_name)
             if os.path.isfile(full_file_name) and self.CheckIsTestSuiteFile(file_name) == OK:
@@ -124,6 +125,10 @@ class TestBench:
                 ret = self.ParseFile(full_file_name)
                 if ret != OK:
                     Log.Log(Log.WARNING, "Error while parsing " + file_name)
+                found_file += 1
+                
+        if found_file == 0:
+            Log.Log(Log.ERROR, "Did not find any xxxxTestSuite.yyy in the directory: " + dir)
         return ret
     
     # Check if the file is a test suite (Ending with TestSuite.xxx)

@@ -124,13 +124,19 @@ def main():
     bench =  TestBench(dir_list, command_dict, options.report, options.synthesis)
     
     # Parse tests
-    bench.Parse()
+    ret = bench.Parse()
+    if ret != OK:
+        return ret
     
     # Run tests
-    bench.Run()
+    ret = bench.Run()
+    if ret != OK:
+        return ret
     
     # Generate reports
-    bench.GenerateReports()
+    ret = bench.GenerateReports()
+    if ret != OK:
+        return ret
 
     return OK
     

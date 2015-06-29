@@ -41,6 +41,9 @@ class TestReport:
         report_string = REPORT_CSV_HEADER + '\n'
         self.timestamp = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
         
+        if not self.suite_dict:
+            return ERROR
+        
         suite = ""
         case = ""
         description = ""
@@ -61,6 +64,8 @@ class TestReport:
             ts = self.suite_dict[suite]
             suite = ts.suite
             type = ts.type
+            if not ts.test_case_dict:
+                continue
             for case in ts.test_case_dict:
                 tc = ts.test_case_dict[case]
                 self.number_test += 1
