@@ -19,7 +19,7 @@ For the impatient.
 - Clone the repo 
 - Build Test/Gtest/main.cpp, Test/Gtest/OperationsCppTestSuite.cpp and the Test/Gtest/Gtest/ directory (Google test framework) to get a Gtest app up and running.
 - Adapt Test/Commands.cfg to the location of your Gtest executable:
- - Adapt that line: "<BinaryLocation>/<GtestExe> --gtest_filter=@SUITE.@CASE --gtest_output=xml:@RESULT"
+ - Adapt that line: "Location/Exe --gtest_filter=@SUITE.@CASE --gtest_output=xml:@RESULT"
 - Go to Scripts/
 - call "python RunTest.py -d ../Test/Gtest,../Test/Junit -c ../Test/Commands.cfg -r ../Test/TestReport.csv -s ../Test/TestSynthesis.csv"
 - check the result files:
