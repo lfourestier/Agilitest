@@ -5,40 +5,79 @@ import TestGlobal
 import Log
 from TestSuite import TestSuite
 from TestCase import TestCase
-import TestReport
+from __builtin__ import True
 
 # Constant
 OK = TestGlobal.OK
 ERROR = TestGlobal.ERROR
 
-ALWAYS = "ALWAYS"
-NO_RUN = TestReport.NO_RUN
 
 # Define a test filter
 class TestFilter:
+    ALWAYS = "ALWAYS"
+    NO_RUN = "NO_RUN"
     
     def __init__(self, include_list, exclude_list):
         self.include_list = include_list
-        self.include_list.append(ALWAYS) # Will always run the tests marked as ALWAYS
         self.exclude_list = exclude_list
-        self.include_list.append(NO_RUN) # Will always exclude the tests marked as NO_RUN
 
-    # Check if it is filtered out based on the keywords, suite name (Return Bool)
-    def IsSuiteFiltered(self, suite):
+    # Check if it is filtered out based on the keywords, suite name (Return True if to be run )
+    def IsSuiteIncluded(self, suite):
         ret = False
-        keyword_list = suite.keywords.split(',')
+        # If no filter then run all automatically
+        if not self.include_list and not self.exclude_list:
+            return True
+        # Get keywords
+        keyword_list = None
+        if suite.keywords:
+            keyword_list = suite.keywords.split(',')
         if not keyword_list:
-            keyword_list.append(ALWAYS) # No keywords means no filtering
+            keyword_list = list()
+            keyword_list.append(self.ALWAYS) # No keywords means no filtering, so append ALWAYS
         keyword_list.append(suite.suite)
-        
+        # Filter 
+        included = False
+        excluded = False
         for key in keyword_list:
-            if key in self.include_list and key not in self.exclude_list:
-                ret = True
+            if not self.include_list or key in self.include_list or key == self.ALWAYS:
+                Log.Log(Log.DEBUG, key + " is included")
+                included = True
+            if (self.exclude_list and key in self.exclude_list) or key == self.NO_RUN:
+                Log.Log(Log.DEBUG, key + " is excluded")
+                excluded = True
+        if included and not excluded:
+            ret = True
+        Log.Log(Log.DEBUG, "Suite " + suite.suite + " included: " + str(ret))
         return ret
     
-    # Check if it is filtered out based on the keywords, case name (Return Bool)
-    def IsCaseFiltered(self, case):
+    # Check if it is filtered out based on the keywords, case name (Return  True if to be run )
+    def IsCaseIncluded(self, case):
         ret = False
-        keyword_list = case.keywords.split(',')
+        # If no filter then run all automatically
+        if not self.include_list and not self.exclude_list:
+            return True
+        # Get keywords
+        keyword_list = None
+        if case.keywords:
+            keyword_list = case.keywords.split(',')
+        if case.suite.keywords:
+            keyword_list.extend(case.suite.keywords.split(',')) # The cases inherits from the Suite keywords
+        if not keyword_list:
+            keyword_list = list()
+            keyword_list.append(self.ALWAYS) # No keywords means no filtering, so append ALWAYS
         keyword_list.append(case.suite.suite + "." + case.case)
+        # Filter 
+        included = False
+        excluded = False
+        for key in keyword_list:
+            if not self.include_list or key in self.include_list or key == self.ALWAYS:
+                Log.Log(Log.DEBUG, key + " is included")
+                included = True
+            if (self.exclude_list and key in self.exclude_list) or key == self.NO_RUN: 
+                Log.Log(Log.DEBUG, key + " is excluded")
+                excluded = True
+        if included and not excluded:
+            ret = True
+        Log.Log(Log.DEBUG, "Case " + case.case + " included: " + str(ret))
         return ret
+     

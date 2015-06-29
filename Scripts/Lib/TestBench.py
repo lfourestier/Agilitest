@@ -1,4 +1,4 @@
-# Free to use
+# Free to use at your own responsibility
 #
 
 import os
@@ -11,6 +11,7 @@ import Log
 import TestGlobal
 from TestSuite import TestSuite
 from TestCase import TestCase
+from TestFilter import TestFilter
 from TestResult import TestResult
 from TestReport import TestReport
 from TestCommand import TestCommand
@@ -48,9 +49,10 @@ CUNIT_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?void\s+(test\w+)\s*\(\
 
 # The test bench class that provides test management functions
 class TestBench:
-    def __init__(self, dir_list, commands, report_file, synthesis_file):
+    def __init__(self, dir_list, commands, include_list, exclude_list, report_file, synthesis_file):
         self.dir_list = dir_list  # As list
         self.test_command = TestCommand(commands)  # As dictionary {gtest:blabla, junit:sdfsdf, ...}
+        self.filter = TestFilter(include_list, exclude_list) # As list 
         self.report_file = report_file
         self.synthesis_file = synthesis_file
         
@@ -97,7 +99,7 @@ class TestBench:
     def GenerateReports(self):
         ret = OK
         print("### Generating reports...")
-        tr = TestReport(self.test_suite_dict)
+        tr = TestReport(self.test_suite_dict, self.filter)
         if self.report_file and self.report_file.endswith(".csv"):
             print("Test report: " + self.report_file)
             ret = tr.CreateCsvReport(self.report_file)
@@ -336,11 +338,12 @@ class TestBench:
     
     # Run a single test suite
     def RunSuite(self, ts):
+        # Check if included (or excluded)
+        if not self.filter.IsSuiteIncluded(ts):
+            return OK
+        
         Log.Log(Log.DEBUG, "Running " + ts.type + " suite: " + ts.suite)
         ret = OK
-        
-        # Check if included or excluded
-        # TODO Implement
         
         # Then run the cases    
         for case in ts.test_case_dict:
@@ -351,10 +354,11 @@ class TestBench:
 
     # Run a single test case
     def RunCase(self, tc):
-        print(tc.suite.suite + "." + tc.case)
+        # Check if included (or excluded)
+        if not self.filter.IsCaseIncluded(tc):
+            return OK
         
-        # Check if included or excluded
-        # TODO Implement
+        print(tc.suite.suite + "." + tc.case)
         
         # Execute
         ret = self.test_command.ExecuteTest(tc)

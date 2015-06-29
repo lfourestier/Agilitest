@@ -23,7 +23,7 @@ def StripCommentStars(str):
 
 # Strip string from white spaces
 def StripWhiteSpaces(str):
-    str = re.sub("\S", "", str)
+    str = re.sub("[ \t]+", "", str)
     return str
 
 # Strip string from white spaces

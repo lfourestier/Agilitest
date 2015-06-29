@@ -5,6 +5,7 @@ import datetime
 import os.path
 import TestGlobal
 import Log
+from TestFilter import TestFilter
 from TestResult import TestResult
 
 # Constant
@@ -21,8 +22,9 @@ SYNTHESIS_CSV_HEADER = "Time;Specified;Run;Pass;Fail;Duration;"
 # Define a test report
 class TestReport:
     
-    def __init__(self, suite_dict):
+    def __init__(self, suite_dict, filter):
         self.suite_dict = suite_dict
+        self.filter = filter
         self.number_test = 0
         self.number_run = 0
         self.number_pass = 0
@@ -62,12 +64,16 @@ class TestReport:
         Log.Log(Log.DEBUG, "Creating CSV report: " + file_name)
         for suite in self.suite_dict:
             ts = self.suite_dict[suite]
+            if not self.filter.IsSuiteIncluded(ts):
+                continue
             suite = ts.suite
             type = ts.type
             if not ts.test_case_dict:
                 continue
             for case in ts.test_case_dict:
                 tc = ts.test_case_dict[case]
+                if not self.filter.IsCaseIncluded(tc):
+                    continue
                 self.number_test += 1
                 case = tc.case
                 description = tc.description

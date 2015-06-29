@@ -21,7 +21,7 @@ For the impatient.
 - Adapt Test/Commands.cfg to the location of your Gtest executable:
  - Adapt that line: "Location/Exe --gtest_filter=@SUITE.@CASE --gtest_output=xml:@RESULT"
 - Go to Scripts/
-- call "python RunTest.py -d ../Test/Gtest,../Test/Junit -c ../Test/Commands.cfg -r ../Test/TestReport.csv -s ../Test/TestSynthesis.csv"
+- call "python RunTest.py -d ../Test/Gtest -c ../Test/Commands.cfg -r ../Test/TestReport.csv -s ../Test/TestSynthesis.csv"
 - check the result files:
  - Test/TestReport.csv
  - Test/TestSynthesis.csv

@@ -7,7 +7,7 @@
  * @defgroup OperationsCTestSuite OperationsCTestSuite
  * This test suite is about.
  * Any details
- * @remarks regression,system
+ * @remarks functional,integration
  * @{
  */
 
@@ -33,7 +33,7 @@ int Teardown_OperationsCTestSuite(void)
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks requirements,regression,system,integration,negative
+ * @remarks negative,regression
  * @priority medium
  */
 void testAdd(void)
@@ -47,7 +47,7 @@ void testAdd(void)
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks regression,system,integration,positive
+ * @remarks positive,regression
  * @priority medium
  */
 void testMultiply(void)
@@ -61,7 +61,7 @@ void testMultiply(void)
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks regression,system,integration,positive,NOT_RUN
+ * @remarks regression,positive,NO_RUN
  * @priority medium
  */
 void testPlannedButNotImplemented(void)

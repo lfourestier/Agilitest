@@ -7,7 +7,7 @@
  * @defgroup OperationsCppTestSuite OperationsCppTestSuite
  * This test suite is about.
  * Any details
- * @remarks regression,system
+ * @remarks functional,system
  * @{
  */
 
@@ -27,7 +27,7 @@ void OperationsCppTestSuite::TearDown(void) {
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks requirements,regression,system,integration,negative
+ * @remarks negative,regression
  * @priority medium
  */
 TEST_F(OperationsCppTestSuite, testAdd)
@@ -42,7 +42,7 @@ TEST_F(OperationsCppTestSuite, testAdd)
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks regression,system,integration,positive
+ * @remarks regression,positive
  * @priority medium
  */
 TEST_F(OperationsCppTestSuite, testMultiply)
@@ -56,7 +56,7 @@ TEST_F(OperationsCppTestSuite, testMultiply)
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks regression,system,integration,positive,NOT_RUN
+ * @remarks regression,positive,NO_RUN
  * @priority medium
  */
 TEST_F(OperationsCppTestSuite, testPlannedButNotImplemented)

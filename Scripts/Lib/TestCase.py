@@ -57,7 +57,7 @@ class TestCase:
             n = re.search(CASE_KEYWORDS_REGEXP, header, re.MULTILINE|re.DOTALL)
             if n != None:
 #                 Log.Log(Log.DEBUG, "case.keywords: " + n.group(0))
-                self.keywords = n.group(1)
+                self.keywords = TestGlobal.StripWhiteSpaces(n.group(1))
             else:
                 Log.Log(Log.WARNING, "Missing keywords for " + self.suite.suite + "." + self.case + ". Test will be ignored while running!")
                     

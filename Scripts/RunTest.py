@@ -1,4 +1,4 @@
-# Free to use
+# Free to use at your own responsibility
 #
 # RunTest -d Cppunit,Junit,Gtest,Cunit -c Commands.cfg -r TestReport.csv -s TestsSynthesis.csv
 
@@ -19,7 +19,7 @@ def generate_command_config(config_file):
     print "Generated " + config_file
     return 0
     
-command_config_file = """# Author Luc Fourestier (luc.fourestier@gmail.com)
+command_config_file = """# Free to use at your own responsibility
 #
 # Specify the commands to be applied for each test frameworks in order to run the tests one by one.
 #
@@ -75,23 +75,27 @@ def main():
                       action="store", default='.');
 
     parser.add_option("-c", "--commands",
-                      dest="commands", help="Specify the option configuration file to use. If not specified, no test will be run.",
+                      dest="commands", help="Specify the command file to use for the test run. If not specified, no test will be run (Only parsed). See -g option to generate a template command file.",
+                      action="store");
+
+    parser.add_option("-i", "--include",
+                      dest="include", help="Specify the inclusive filter (Coma separated list of keywords), ie: tests to be run based on keywords. ex: \"regression,integration\"",
+                      action="store");
+
+    parser.add_option("-x", "--exclude",
+                      dest="exclude", help="Specify the exclusive filter(Coma separated list of keywords), ie: tests NOT to be run based on keywords. ex: \"regression,integration\"",
                       action="store");
 
     parser.add_option("-r", "--report",
                       dest="report", help="Specify the test report file where to write back the results in CSV format.",
                       action="store", default='TestReport.csv');
 
-    parser.add_option("-f", "--filter",
-                      dest="filter", help="Specify the tests and suites to be ran or not, based on keywords (See @remarks). ex: \"regression,integration\"",
-                      action="store");
-
     parser.add_option("-s", "--synthesis",
                       dest="synthesis", help="Specify the synthesis file where to concatenate back the tests synthesis (run, pass, fail) in CSV format.",
                       action="store", default='TestSynthesis.csv');
 
     parser.add_option("-g", "--generate",
-                      help="Generate a option template config file that can be used as a seed. See also -c option.",
+                      help="Generate a template command file that can be used as a seed for your own commands. See also -c option.",
                       action="store_const", const=1, dest="generate")
 
     (options, args) = parser.parse_args()
@@ -121,9 +125,19 @@ def main():
                 command_dict[section] = option_dict
             
         Log.Log(Log.DEBUG, "Commands = " + repr(command_dict))
+        
+    # Parse filters
+    include_list = None
+    if options.include:
+        include_list = options.include.split(',')
+        Log.Log(Log.DEBUG, "Include filter" + repr(include_list))
+    exclude_list = None
+    if options.exclude:
+        exclude_list = options.exclude.split(',')
+        Log.Log(Log.DEBUG, "Exclude filter" + repr(exclude_list))
     
     # Create test bench
-    bench =  TestBench(dir_list, command_dict, options.report, options.synthesis)
+    bench =  TestBench(dir_list, command_dict, include_list, exclude_list, options.report, options.synthesis)
     
     # Parse tests
     ret = bench.Parse()
@@ -144,7 +158,7 @@ def main():
     
 # Call main
 if __name__ == "__main__":
-    sys.path.append("Lib")
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/Lib")
     import TestGlobal
     import Log
     from TestBench import TestBench

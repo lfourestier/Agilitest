@@ -34,7 +34,7 @@ class TestSuite:
             n = re.search(SUITE_KEYWORDS_REGEXP, header, re.MULTILINE|re.DOTALL)
             if n != None:
 #                 Log.Log(Log.DEBUG, "Suite.keywords: " + n.group(0))
-                self.keywords = n.group(1)
+                self.keywords = TestGlobal.StripWhiteSpaces(n.group(1))
             else:
                 ret = ERROR
         else:
