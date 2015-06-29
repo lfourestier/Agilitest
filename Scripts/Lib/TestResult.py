@@ -11,8 +11,13 @@ OK = TestGlobal.OK
 ERROR = TestGlobal.ERROR
 
 # output
-GTEST_OUTPUT_PASS = "\[\s+PASSED\s+\]\s+(\d+)\s+test"
-GTEST_OUTPUT_FAIL = "\[\s+FAILED\s+\]\s+(\d+)\s+test"
+GTEST_OUTPUT_DETAILS = "\[\s+RUN\s+\]\s+(\w+)\.(\w+)(.*?)\[\s+(\w+)\s+\][\s\w\.]+\s+\((\d+)\sms\)"
+GTEST_PASS = "OK"
+GTEST_FAIL = "FAILED"
+
+CUNIT_OUTPUT_DETAILS = "Suite\:\s+(\w+)\s+Test\:\s+(\w+)\s*\.\.\.(\w+)(.*?)Run Summary\:.*?Elapsed\s+time\s+\=\s+([\.\d]+)\s+seconds"
+CUNIT_PASS = "passed"
+CUNIT_FAIL = "FAILED"
 
 # result
 XML_RESULT_FORMAT_MARKER = "<?xml version=\""
@@ -31,6 +36,7 @@ JUNIT_XML_MSG_ATTRIB = "message"
 class TestResult:
     PASS = "PASS"
     FAIL = "FAIL"
+    NO_RUN = "NO_RUN"
     
     def __init__(self, suite_type):
         self.status = self.FAIL  # PASS or FAIL
@@ -47,21 +53,52 @@ class TestResult:
     def ParseOutput(self, output):
         ret = OK
         self.output = output
+        Log.Log(Log.DEBUG, "Parsing ouput...")
+        Log.Log(Log.DEBUG, output)
         if self.type == TestGlobal.GTEST_TYPE:
-            m = re.search(GTEST_OUTPUT_PASS, output)
-            if m and int(m.group(1)) > 0:
-                self.status = self.PASS
-            m = re.search(GTEST_OUTPUT_FAIL, output)
-            if m and int(m.group(1)) > 0:
-                self.status = self.FAIL
+            self.ParseGtestOutput(output)
         elif self.type == TestGlobal.JUNIT_TYPE:
-            Log.Log(Log.VERBOSE, "TODO Junit ParseOutput not yet implemented")
+            Log.Log(Log.DEBUG, "TODO Junit ParseOutput not yet implemented")
         elif self.type == TestGlobal.CPPUNIT_TYPE:
-            Log.Log(Log.VERBOSE, "TODO Cppunit ParseOutput not yet implemented")
+            Log.Log(Log.DEBUG, "TODO Cppunit ParseOutput not yet implemented")
         elif self.type == TestGlobal.CUNIT_TYPE:
-            Log.Log(Log.VERBOSE, "TODO Cunit ParseOutput not yet implemented")
+            self.ParseCunitOutput(output)
         else:
             ret = ERROR
+            
+        return ret
+    
+    # Parse Gtest output
+    def ParseGtestOutput(self, output):
+        ret = OK
+        m = re.search(GTEST_OUTPUT_DETAILS, output, re.DOTALL)
+        if m:
+            self.suite_name = m.group(1)
+            self.case_name = m.group(2)
+            self.details = TestGlobal.StripCarriageReturn(m.group(3))
+            if m.group(4) == GTEST_PASS:
+                self.status = self.PASS
+            else:
+                self.status = self.FAIL
+            self.duration = str(float(m.group(5))/1000) # to seconds
+            Log.Log(Log.DEBUG, "Found Gtest output details: " + self.suite_name + ", " + self.case_name+ ", " + self.details + ", " + self.status + ", " + self.duration)
+            
+        return ret
+    
+    # Parse Cunit output
+    def ParseCunitOutput(self, output):
+        ret = OK
+        m = re.search(CUNIT_OUTPUT_DETAILS, output, re.DOTALL)
+        if m:
+            self.suite_name = m.group(1)
+            self.case_name = m.group(2)
+            self.details = TestGlobal.StripCarriageReturn(m.group(4))
+            if m.group(3) == CUNIT_PASS:
+                self.status = self.PASS
+            else:
+                self.status = self.FAIL
+            self.duration = m.group(5)
+            Log.Log(Log.DEBUG, "Found Cunit output details: " + self.suite_name + ", " + self.case_name + ", " + self.details + ", " + self.status + ", " + self.duration)
             
         return ret
     
@@ -69,9 +106,10 @@ class TestResult:
     def ParseResult(self, result):
         ret = OK
         self.result = result
+        Log.Log(Log.DEBUG, "Parsing result...")
         
         if self.SniffResult(result) == TestGlobal.JUNIT_TYPE:
-            Log.Log(Log.DEBUG, "Result is Junit type.")
+#             Log.Log(Log.DEBUG, "Result is Junit type.")
             ret = self.ParseJunitResult(result)
             
         Log.Log(Log.DEBUG, result)

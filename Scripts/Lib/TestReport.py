@@ -11,7 +11,7 @@ from TestResult import TestResult
 OK = TestGlobal.OK
 ERROR = TestGlobal.ERROR
 
-NO_RUN = "NO_RUN"
+NO_RUN = TestResult.NO_RUN
 
 
 REPORT_CSV_HEADER = "Suite;Case;Description;Priority;Type;Keywords;Preconditions;Postconditions;Expected;Status;Details;Time;Duration;"

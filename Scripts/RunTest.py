@@ -36,26 +36,28 @@ command_config_file = """# Author Luc Fourestier (luc.fourestier@gmail.com)
 # In which:
 # @CASE will be replaced by the test case name
 # @SUITE will be replaced by the test suite name
-# Ex: "echo Run @CASE in @SUITE @@ echo Done"
+# @RESULT will be replaced by the result string specified in the optional "result" param.
+# Ex: "echo Run @CASE in @SUITE into @RESULT @@ echo Done"
 #
 # Commands are then run one after each other.
 #
-# After each test case run, the intermediate result file is specified with the "result" param.
+# After each test case run, the intermediate result file location is specified with the "result" param.
+# if not specified, only the output will be parsed.
 
 [Gtest]
-command = echo "Run Gtest case @CASE in @SUITE" @@ echo "Done!"
+command = echo "Run Gtest case @CASE in @SUITE into @RESULT" @@ echo "Done!"
 result = result.xml
 
 [Junit]
-command = echo "Run Junit case @CASE in @SUITE" @@ echo "Done!"
+command = echo "Run Junit case @CASE in @SUITE into @RESULT" @@ echo "Done!"
 result = result.xml
 
 [Cppunit]
+command = echo "Run Cppunit case @CASE in @SUITE into @RESULT" @@ echo "Done!"
 result = result.xml
-command = echo "Run Cppunit case @CASE in @SUITE" @@ echo "Done!"
 
 [Cunit]
-command = echo "Run Cunit case @CASE in @SUITE" @@ echo "Done!"
+command = echo "Run Cunit case @CASE in @SUITE into @RESULT" @@ echo "Done!"
 result = result.xml
 """
 

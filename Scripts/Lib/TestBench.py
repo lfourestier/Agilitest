@@ -43,6 +43,9 @@ GTEST_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?TEST_F\(\w+\s*,\s*(\w+
 JUNIT_SUITE_REGEXP = "(@defgroup.*?)@\{"
 JUNIT_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?@Test.*?(test\w+)\s*\("]
 
+CUNIT_SUITE_REGEXP = "(@defgroup.*?)@\{"
+CUNIT_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?void\s+(test\w+)\s*\(\s*void\s*\)"]
+
 # The test bench class that provides test management functions
 class TestBench:
     def __init__(self, dir_list, commands, report_file, synthesis_file):
@@ -210,7 +213,28 @@ class TestBench:
     
     # Sniff if it is Cunit
     def SniffCunit(self, file_name):
-        # TODO Implement
+        confidence = 0
+        if file_name.endswith(CUNIT_EXT):
+            f = open(file_name)
+            content = f.read()
+            f.close()
+            if re.search("include.*CUnit\.h", content):
+                confidence = confidence + 5
+            if re.search("CU_PASS[ \t]*\(.*\)", content):
+                confidence = confidence + 5
+            if re.search("CU_ASSERT", content):
+                confidence = confidence + 5
+            if re.search("CU_TEST[ \t]*\(.*\)", content):
+                confidence = confidence + 5
+            if re.search("CU_TEST_FATAL[ \t]*\(.*\)", content):
+                confidence = confidence + 5
+            if re.search("CU_FAIL[ \t]*\(.*\)", content):
+                confidence = confidence + 5
+            if re.search("CU_FAIL_FATAL[ \t]*\(.*\)", content):
+                confidence = confidence + 5
+           
+        if confidence >= 5:
+            return True
         return False
     
     # Parse a test suite file to find test framework type
@@ -236,6 +260,9 @@ class TestBench:
         elif file_type == TestGlobal.JUNIT_TYPE:
             suite_regexp = JUNIT_SUITE_REGEXP
             case_regexp_list = JUNIT_CASE_REGEXP_LIST
+        elif file_type == TestGlobal.CUNIT_TYPE:
+            suite_regexp = CUNIT_SUITE_REGEXP
+            case_regexp_list = CUNIT_CASE_REGEXP_LIST
             # TODO Implement other framework
         else:
             Log.Log(Log.ERROR, "Unknown file type in ParseFileType!")
@@ -339,7 +366,7 @@ class TestBench:
                 print tc.test_case_result.details
             print(tc.test_case_result.status)
         else:
-            print("FAIL")
+            print(TestResult.NO_RUN)
                 
         return ret
     

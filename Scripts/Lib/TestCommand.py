@@ -44,9 +44,9 @@ class TestCommand:
                     Log.Log(Log.ERROR, "Commands are not valid")
                     ret = ERROR
                     break
-                if not self.commands[cmd].has_key(COMMAND_RESULT):
-                    self.commands[cmd][COMMAND_RESULT] = COMMAND_DEFAULT_RESULT
-                    Log.Log(Log.WARNING, "Forced the intermediate result file for " + cmd + " to: " + COMMAND_DEFAULT_RESULT)
+#                 if not self.commands[cmd].has_key(COMMAND_RESULT):
+#                     self.commands[cmd][COMMAND_RESULT] = COMMAND_DEFAULT_RESULT
+#                     Log.Log(Log.WARNING, "Forced the intermediate result file for " + cmd + " to: " + COMMAND_DEFAULT_RESULT)
         if command_number <=0:
             ret = ERROR
         return ret
@@ -62,13 +62,18 @@ class TestCommand:
             return ERROR
         
         # get intermediate result file location
-        result = self.commands[tc.suite.type][COMMAND_RESULT]
+        result = None
+        if self.commands[tc.suite.type].has_key(COMMAND_RESULT):
+            result = self.commands[tc.suite.type][COMMAND_RESULT]
         
         # Substitute the macros in the command
         commands = re.sub(COMMAND_SUITE_MACRO, tc.suite.suite, commands)
         commands = re.sub(COMMAND_CASE_MACRO, tc.case, commands)
-        commands = re.sub(COMMAND_RESULT_MACRO, result, commands)
-        
+        if result:
+            commands = re.sub(COMMAND_RESULT_MACRO, result, commands)
+        else:
+            commands = re.sub(COMMAND_RESULT_MACRO, "", commands)
+            
         # Process
         ret = self.ProcessCommands(commands)
         if ret != OK:
@@ -83,32 +88,34 @@ class TestCommand:
                 return ret
         else:
             Log.Log(Log.WARNING, "No output to parse")
-
-        # Parser intermediate result
-        try:
-            f = open(result)
-        except:
-            f = None
-        if not f:
-            Log.Log(Log.WARNING, "Cannot open result file.")
             ret = ERROR
-        else:
-            content = f.read()
-            if not content:
-                Log.Log(Log.WARNING, "Intermediate result file is empty!")
+
+        # Parse intermediate result
+        if result:
+            try:
+                f = open(result)
+            except:
+                f = None
+            if not f:
+                Log.Log(Log.WARNING, "Cannot open result file.")
                 ret = ERROR
-            f.close()
-            os.remove(result)
-        
+            else:
+                content = f.read()
+                if not content:
+                    Log.Log(Log.WARNING, "Intermediate result file is empty!")
+                    ret = ERROR
+                f.close()
+                os.remove(result)
+            if ret == OK:
+                ret = tr.ParseResult(content)
+                if ret != OK:
+                    return ret
+            
+        # Add tr into tc
         if ret == OK:
-            ret = tr.ParseResult(content)
-            if ret != OK:
-                return ret
-            # Add tr into tc
             tc.test_case_result = tr
         else:
             ret = OK # We continue anyway
-            
         return ret
     
     # Execute the commands in a process
