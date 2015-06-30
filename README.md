@@ -29,6 +29,8 @@ For the impatient.
 For more:
 - "python RunTest.py -h"
 
+For development please go to [Development documentation](Doc/DEV.md)
+
 ## Project content
 
 The project directories are made as if it was a normal C/C++ or java project on which you would run RunTest.
@@ -220,6 +222,19 @@ In those commands:
 - @RESULT will be replaced by the intermediate result file (See "result" variable in the confiug file).
 
 It also specify where to find the intermediate result file for the test case run.
+
+## RunTest reports
+
+### Test report and specification
+
+RunTest creates a csv file out of all the information it gathers while parsing and running. It is excel compatible and can be inserted in any documents.
+It replaces the specification and the test report.
+
+### Test synthesis
+
+The synthesis is a summary of the specified;run;pass;fail.. tests for the run. 
+At every run, it is appending the new results, that enables the user to follow up the progression of the tests during the project. 
+
 
 
 
