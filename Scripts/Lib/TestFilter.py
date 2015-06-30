@@ -65,6 +65,7 @@ class TestFilter:
         if not keyword_list:
             keyword_list = list()
             keyword_list.append(self.ALWAYS) # No keywords means no filtering, so append ALWAYS
+        keyword_list.append(case.case)
         keyword_list.append(case.suite.suite + "." + case.case)
         # Filter 
         included = False
