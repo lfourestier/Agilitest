@@ -15,9 +15,9 @@ ERROR = TestGlobal.ERROR
 NO_RUN = TestResult.NO_RUN
 
 
-REPORT_CSV_HEADER = "Suite;Case;Description;Priority;Type;Keywords;Preconditions;Postconditions;Expected;Status;Details;Time;Duration;"
+REPORT_CSV_HEADER = "Suite;Case;Description;Priority;Type;Keywords;Preconditions;Postconditions;Expected;Status;Details;Time;Duration"
 
-SYNTHESIS_CSV_HEADER = "Time;Specified;Run;Pass;Fail;Duration;"
+SYNTHESIS_CSV_HEADER = "Time,Specified,Run,Pass,Fail,Duration"
 
 # Define a test report
 class TestReport:
@@ -125,7 +125,7 @@ class TestReport:
         if self.number_run != (self.number_pass + self.number_fail):
             Log.Log(Log.WARNING, "Incoherences between numbers of test run, passed and failed!")
             
-        synthesis_string = self.timestamp + ';' + str(self.number_test) + ';' + str(self.number_run) + ';' + str(self.number_pass) + ';' + str(self.number_fail) + ';' + str(self.total_duration)
+        synthesis_string = self.timestamp + ',' + str(self.number_test) + ',' + str(self.number_run) + ',' + str(self.number_pass) + ',' + str(self.number_fail) + ',' + str(self.total_duration)
         Log.Log(Log.DEBUG, synthesis_string)
         
         if os.path.exists(file_name):

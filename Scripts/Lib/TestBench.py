@@ -55,6 +55,7 @@ class TestBench:
         self.filter = TestFilter(include_list, exclude_list) # As list 
         self.report_file = report_file
         self.synthesis_file = synthesis_file
+        self.test_report = None
         
         self.test_suite_dict = None
         
@@ -110,9 +111,21 @@ class TestBench:
             print("Test synthesis: " + self.synthesis_file)
             ret = tr.UpdateSynthesisReport(self.synthesis_file) 
         if ret == OK:
-            print("OK")   
+            print("OK") 
+        self.test_report = tr 
         return ret
     
+    def IsPassed(self):
+        ret = OK
+        print("### Overall result...")
+        if self.test_report and self.test_report.number_fail > 0:
+            print("FAILED")
+            ret = ERROR
+        else:
+            print("PASSED")
+            
+        return ret
+        
     # Parse a directory to find test suite files
     def ParseDirectory(self, dir):
         ret = ERROR

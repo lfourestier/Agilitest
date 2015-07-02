@@ -154,7 +154,12 @@ def main():
     if ret != OK:
         return ret
 
-    return OK
+    # Generate reports
+    ret = bench.IsPassed()
+    if ret != OK:
+        return ret
+    
+    return ret
     
 # Call main
 if __name__ == "__main__":

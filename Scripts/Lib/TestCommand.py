@@ -130,8 +130,8 @@ class TestCommand:
             except subprocess.CalledProcessError as e:
                 self.output += '\n' + e.output
                 break
-            except:
-                Log.Log(Log.ERROR, "Unexpected error while executing command.")
+            except Exception as e:
+                Log.Log(Log.ERROR, "Unexpected error while executing command: " + str(e))
                 ret = ERROR
                 break
 #             self.output += '\n'
