@@ -15,10 +15,10 @@ CC_DEPS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 obj/Gtest/%.o: ../Gtest/%.cc
-	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C++ Compiler'
+	@echo "Building file: $<"
+	@echo "Invoking: GCC C++ Compiler"
 	g++ -I"../Gtest/src" -I"../Gtest/include" -I"../Gtest" $(CPP_FLAGS) -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
+	@echo "Finished building: $<"
+	@echo " "
 
 

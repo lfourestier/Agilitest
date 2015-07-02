@@ -37,16 +37,16 @@ release: Cunit
 
 # Tool invocations
 Cunit: $(OBJS) $(USER_OBJS)
-	@echo 'Building target: $@'
-	@echo 'Invoking: GCC C Linker'
+	@echo "Building target: $@"
+	@echo "Invoking: GCC C Linker"
 	gcc  -o "Cunit" $(OBJS) $(USER_OBJS) $(LIBS)
-	@echo 'Finished building target: $@'
-	@echo ' '
+	@echo "Finished building target: $@"
+	@echo " "
 
 # Other Targets
 clean:
 	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) Cunit
-	-@echo ' '
+	-@echo " "
 
 .PHONY: all clean debug release dependents
 .SECONDARY:

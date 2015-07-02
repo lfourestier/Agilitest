@@ -18,10 +18,10 @@ C_DEPS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 obj/%.o: ../%.c
-	@echo 'Building file: $<'
-	@echo 'Invoking: GCC C Compiler'
+	@echo "Building file: $<"
+	@echo "Invoking: GCC C Compiler"
 	gcc -I"../CUnit/Headers" -I".." $(C_FLAGS) -Wall -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
+	@echo "Finished building: $<"
+	@echo " "
 
 
