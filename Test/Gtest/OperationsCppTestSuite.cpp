@@ -11,6 +11,8 @@
  * @{
  */
 
+#include <unistd.h>
+
 #include <OperationsCppTestSuite.h>
 
 void OperationsCppTestSuite::SetUp(void) {
