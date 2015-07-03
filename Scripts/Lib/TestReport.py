@@ -15,7 +15,7 @@ ERROR = TestGlobal.ERROR
 NO_RUN = TestResult.NO_RUN
 
 
-REPORT_CSV_HEADER = "Suite;Case;Description;Priority;Type;Keywords;Preconditions;Postconditions;Expected;Status;Details;Time;Duration"
+REPORT_CSV_HEADER = "Suite,Case,Description,Priority,Type,Keywords,Preconditions,Postconditions,Expected,Status,Details,Time,Duration,"
 
 SYNTHESIS_CSV_HEADER = "Time,Specified,Run,Pass,Fail,Duration"
 
@@ -59,35 +59,34 @@ class TestReport:
         details = ""
         time = ""
         duration = ""
-        other = ""
         
         Log.Log(Log.DEBUG, "Creating CSV report: " + file_name)
-        for suite in self.suite_dict:
-            ts = self.suite_dict[suite]
+        for s in self.suite_dict:
+            ts = self.suite_dict[s]
             if not self.filter.IsSuiteIncluded(ts):
                 continue
-            suite = ts.suite
-            type = ts.type
+            suite = TestGlobal.StripComas(ts.suite)
+            type = TestGlobal.StripComas(ts.type)
             if not ts.test_case_dict:
                 continue
-            for case in ts.test_case_dict:
-                tc = ts.test_case_dict[case]
+            for c in ts.test_case_dict:
+                tc = ts.test_case_dict[c]
                 if not self.filter.IsCaseIncluded(tc):
                     continue
                 self.number_test += 1
-                case = tc.case
-                description = tc.description
-                priority = tc.priority
-                keywords = tc.keywords
-                pre = tc.preconditions
-                post = tc.postconditions
-                expected = tc.expected
+                case = TestGlobal.StripComas(tc.case)
+                description = TestGlobal.StripComas(tc.description)
+                priority = TestGlobal.StripComas(tc.priority)
+                keywords = TestGlobal.ComaToSemicolon(tc.keywords)
+                pre = TestGlobal.StripComas(tc.preconditions)
+                post = TestGlobal.StripComas(tc.postconditions)
+                expected = TestGlobal.StripComas(tc.expected)
                 if tc.test_case_result:
                     # Test report
                     status = tc.test_case_result.status
-                    details = tc.test_case_result.details
-                    time = tc.test_case_result.timestamp
-                    duration = tc.test_case_result.duration
+                    details = TestGlobal.StripComas(tc.test_case_result.details)
+                    time = TestGlobal.StripComas(tc.test_case_result.timestamp)
+                    duration = TestGlobal.StripComas(tc.test_case_result.duration)
                     # Synthesis
                     self.number_run += 1
                     if status == TestResult.PASS:
@@ -100,10 +99,9 @@ class TestReport:
                     details = ""
                     time = ""
                     duration = ""
-                    other = ""
 
                 
-                case_string = suite + ';' + case + ';' + description + ';' + priority + ';' + type + ';' + keywords + ';' + pre + ';' + post + ';' + expected + ';' + status + ';' + details + ';' + time + ';' + duration + ';' + other
+                case_string = suite + ',' + case + ',' + description + ',' + priority + ',' + type + ',' + keywords + ',' + pre + ',' + post + ',' + expected + ',' + status + ',' + details + ',' + time + ',' + duration + ',' 
                 Log.Log(Log.DEBUG, case_string)
                 report_string += case_string  + '\n'
         

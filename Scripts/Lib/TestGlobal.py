@@ -31,4 +31,14 @@ def StripCarriageReturn(str):
     str = re.sub("[\r\n]+", " ", str)
     return str
 
+# Strip string from white spaces
+def StripComas(str):
+    str = re.sub("\,", "", str)
+    return str
+
+# Strip string from white spaces
+def ComaToSemicolon(str):
+    str = re.sub("\,", ";", str)
+    return str
+
 
