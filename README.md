@@ -105,7 +105,7 @@ Integrate RunTest into your Jenkins jobs. (See [Jenkins Documentation](Doc/Jenki
 
 ## For RunTest developers
 
-For who want to develop further RunTest.py. see [Development documentation](Doc/DEV.md)
+For who want to develop further RunTest.py. see [Development documentation](Doc/Dev.md)
 
 
 
