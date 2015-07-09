@@ -3,14 +3,10 @@
 Agile Test Driven Methodology is simple: "You define your User Story (US) acceptance tests before any anything else in your US lifecycle". 
 Where a US acceptance test is a functional scenario prooving/validating one of your US requirements.
 
-This could be like this:
-
-
-
 ## US Lifecycle in ATDM using RunTest
 
-This is what a US lifecycle could be in ATDM using RunTest:
-![ATDM User Story lifecycle](Doc/ATDM.png)
+This is what a US lifecycle could be in ATDM using RunTest: 
+![ATDM User Story lifecycle](ATDM.png)
 
 1. Define the US acceptance tests using the RunTest synthax directly into the test sources:
 	* RunTest will detect automatically the changes and, through jenkins, update the test report with the newly specified tests.

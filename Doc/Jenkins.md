@@ -1,16 +1,16 @@
 # Jenkins integration
 
-![Jenkins job](Doc/Jenkins.png)
+![Jenkins synthesis plots](Jenkins.png)
 
 ## Setup a job
 
-If you want to try RunTest with jenkins you can configure a job as follow.
+If you want to try RunTest with jenkins you can configure a job as follow (For Google test framework and Cunit).
 
 ### Source Code Management
 
 Git repo:
 
-	https://github.com/lfourestier/RunTest.git
+	https://github.com/lfourestier/Agilitest.git
 
 Branch:
 
@@ -24,20 +24,20 @@ Branch:
  
 Execute shell:
 
-	cd sw\RunTest\Test\Cunit\Build
+	cd Example\Test\Cunit\Build
 	make clean all
 	cd ..\..\Gtest\Build
 	make clean all
-	cd ..\..\..\Scripts
+	cd ..\..\..\..\Scripts
 	@echo Starting RunTest
-	c:\Python27\python.exe RunTest.py -d ../Test/Cunit,../Test/Gtest -c ../Test/Commands.cfg -r ../Test/TestReport.csv -s ../Test/TestSynthesis.csv
+	python RunTest.py -d ../Example/Test/Cunit,../Example/Test/Gtest -c ../Example/Test/Commands.cfg -r ../Example/Test/TestReport.csv -s ../Example/Test/TestSynthesis.csv
 	
 ### Post-build Actions
 
 **Artifacts:**
- - sw/RunTest/Test/*.csv
+ - Example/Test/*.csv
  
 **Plot build data:** (Plot plugin required)
- - Data series file: sw/RunTest/Test/TestSynthesis.csv 
+ - Data series file: Example/Test/TestSynthesis.csv 
  - Exclude columns by name: Time,Duration
  - "Display original csv above plot"
