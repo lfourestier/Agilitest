@@ -1,6 +1,24 @@
-# RunTest
+# Agilitest
+
+Quick shortcuts:
+- [Agile Test Driven Methodology](Doc/ATDM.md)
+- [Get Started](Doc/GetStarted.md)
+- [Licenses](Doc/License.md) (Basically, "Free to use at your own responsibility")
+- [Project Content](Doc/ProjectContent.md)
+- [RunTest Usage Documentation](Doc/RunTest.md)
+- [RunTest Development Documentation](Doc/Dev.md)
+- [Jenkins Integration Documentation](Doc/Jenkins.md)
+- [Doxygen Generation](Doc/Doxygen.md)
+- [Iterating Documentation Methodology](Doc/IteratingDoc.md)
+
+See "How To" chapter below as well.
 
 ## Introduction:
+
+Agilitest is a full test driven methodology for Agile, articulated around a script (Scripts/RunTest.py) that optimizes the work of everybody in an agile and test driven way. 
+([See "Agile Test Driven Methodology"](Doc/ATDM.md))
+
+## RunTest script
 
 More than just a script, the Scripts/RunTest.py is the pilar of a full Continuous Integration (CI) and Test Driven process, working with different languages and well-know test frameworks and specifically well designed for Agile Test Driven Methodology ([See ATDM](Doc/ATDM.md)).
 
@@ -53,59 +71,19 @@ Reuse well-known tools and frameworks:
   - svn
   - ...
 
-## Licence
-
-Free to use at your own responsibility.
-
-## Get started
-
-For the impatient.
-
-- Clone the repo 
-- Build Test/Gtest/main.cpp, Test/Gtest/OperationsCppTestSuite.cpp and the Test/Gtest/Gtest/ directory (Google test framework) to get a Gtest app up and running.
-- Adapt Test/Commands.cfg to the location of your Gtest executable:
- - Adapt that line: "Location/Exe --gtest_filter=@SUITE.@CASE --gtest_output=xml:@RESULT"
-- Go to Scripts/
-- call "python RunTest.py -d ../Test/Gtest -c ../Test/Commands.cfg -r ../Test/TestReport.csv -s ../Test/TestSynthesis.csv"
-- check the result files:
- - Test/TestReport.csv
- - Test/TestSynthesis.csv
- 
-For more:
-- "python RunTest.py -h"
-
-## Directory content
-
-The project directories are made as if it was a normal C/C++ or java project on which you would run RunTest.
-- README.md is that file
-- Doxyfile is the doxygen config file for the test documentation generation
-- Doc/
- * html/ contains the result of doxygen ran on the Test/ directory (See Doxyfile)
- * Mgt/ contains interesting process documents as the "Iteration Documentation" which explains this test process and a bit more (Free for you own info)
-- Scripts/ contains the RunTest.py and its modules
- * Lib/ contains the modules used by RunTest.py
-- Src/ contains fake source code that will be used as source under test.
-- Test/ contains all the test framework templates compatible with RunTest.py and that you can copy. 
-
-## RunTest documentation
-
-[RunTest Documentation](Doc/RunTest.md)
-
 ## Agile Test Driven Methodology
 
 The process motivating the RunTest philosophy. ([See ATDM](Doc/ATDM.md))
 
+## How To
+
+- How to use Runtest.py : [RunTest Documentation](Doc/RunTest.md)
+- How to develop RunTest.py :[Development documentation](Doc/Dev.md)
+- How to integrate RunTest.py into Jenkins : [Jenkins Documentation](Doc/Jenkins.md))
+
 ## Iterating Documentation
 
 A way to handle iteration in your project's documentation using RunTest for test documentation. (See [Iterating Documentation](Doc/IteratingDoc.md))
-
-## Jenkins integration
-
-Integrate RunTest into your Jenkins jobs. (See [Jenkins Documentation](Doc/Jenkins.md))
-
-## For RunTest developers
-
-For who want to develop further RunTest.py. see [Development documentation](Doc/Dev.md)
 
 
 
