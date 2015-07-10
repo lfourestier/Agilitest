@@ -63,7 +63,7 @@ class TestReport:
         Log.Log(Log.DEBUG, "Creating CSV report: " + file_name)
         for s in self.suite_dict:
             ts = self.suite_dict[s]
-            if not self.filter.IsSuiteIncluded(ts):
+            if self.filter and not self.filter.IsSuiteIncluded(ts):
                 continue
             suite = TestGlobal.StripComas(ts.suite)
             type = TestGlobal.StripComas(ts.type)
@@ -71,7 +71,7 @@ class TestReport:
                 continue
             for c in ts.test_case_dict:
                 tc = ts.test_case_dict[c]
-                if not self.filter.IsCaseIncluded(tc):
+                if self.filter and not self.filter.IsCaseIncluded(tc):
                     continue
                 self.number_test += 1
                 case = TestGlobal.StripComas(tc.case)

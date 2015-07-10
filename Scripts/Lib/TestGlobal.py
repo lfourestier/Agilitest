@@ -12,6 +12,7 @@ GTEST_TYPE = "Gtest"
 JUNIT_TYPE = "Junit"
 CPPUNIT_TYPE = "Cppunit"
 CUNIT_TYPE = "Cunit"
+PYTEST_TYPE = "Pytest"
 
 NONE_TYPE = "None" # When unknown framework
 
@@ -19,6 +20,7 @@ NONE_TYPE = "None" # When unknown framework
 # Strip string from comment stars
 def StripCommentStars(str):
     str = re.sub("\n[\s\*]+", " ", str)
+    str = re.sub("\n[\s\#]+", " ", str)
     return str
 
 # Strip string from white spaces

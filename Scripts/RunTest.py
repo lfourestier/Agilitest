@@ -28,6 +28,7 @@ command_config_file = """# Free to use at your own responsibility
 # Junit
 # Cppunit
 # Cunit
+# Pytest
 #
 # @@ separated commands: 
 # "<command1> @@ <command2> @@ <command3>" and so on...
@@ -59,13 +60,17 @@ result = result.xml
 [Cunit]
 command = echo "Run Cunit case @CASE in @SUITE into @RESULT" @@ echo "Done!"
 result = result.xml
+
+[Cunit]
+command = echo "Run Pytest case @CASE in @SUITE into @RESULT" @@ echo "Done!"
+result = result.xml
 """
 
 # Main
 def main():
 #     print "# RunTest #"
     
-#     Log.SetLevels([Log.ERROR, Log.WARNING, Log.DEBUG])
+    Log.SetLevels([Log.ERROR, Log.WARNING, Log.DEBUG])
     
     # Parse options
     parser = optparse.OptionParser()
@@ -89,6 +94,10 @@ def main():
     parser.add_option("-r", "--report",
                       dest="report", help="Specify the test report file where to write back the results in CSV format.",
                       action="store", default='TestReport.csv');
+
+    parser.add_option("--filtered_report",
+                      help="Generate a filtered report. If specified, the report will contain only the tests that are run.",
+                      action="store_const", const=1, dest="filtered_report")
 
     parser.add_option("-s", "--synthesis",
                       dest="synthesis", help="Specify the synthesis file where to concatenate back the tests synthesis (run, pass, fail) in CSV format.",
@@ -135,9 +144,13 @@ def main():
     if options.exclude:
         exclude_list = options.exclude.split(',')
         Log.Log(Log.DEBUG, "Exclude filter" + repr(exclude_list))
+        
+    filter_report = False
+    if options.filtered_report == 1:
+        filter_report = True
     
     # Create test bench
-    bench =  TestBench(dir_list, command_dict, include_list, exclude_list, options.report, options.synthesis)
+    bench =  TestBench(dir_list, command_dict, include_list, exclude_list, options.report, options.synthesis, filter_report)
     
     # Parse tests
     ret = bench.Parse()

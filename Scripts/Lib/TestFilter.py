@@ -15,7 +15,7 @@ ERROR = TestGlobal.ERROR
 # Define a test filter
 class TestFilter:
     ALWAYS = "ALWAYS"
-    NO_RUN = "NO_RUN"
+    NO_RUN = "NEVER"
     
     def __init__(self, include_list, exclude_list):
         self.include_list = include_list
@@ -24,9 +24,6 @@ class TestFilter:
     # Check if it is filtered out based on the keywords, suite name (Return True if to be run )
     def IsSuiteIncluded(self, suite):
         ret = False
-        # If no filter then run all automatically
-        if not self.include_list and not self.exclude_list:
-            return True
         # Get keywords
         keyword_list = None
         if suite.keywords:
@@ -40,10 +37,10 @@ class TestFilter:
         excluded = False
         for key in keyword_list:
             if not self.include_list or key in self.include_list or key == self.ALWAYS:
-                Log.Log(Log.DEBUG, key + " is included")
+                Log.Log(Log.VERBOSE, key + " is included")
                 included = True
             if (self.exclude_list and key in self.exclude_list) or key == self.NO_RUN:
-                Log.Log(Log.DEBUG, key + " is excluded")
+                Log.Log(Log.VERBOSE, key + " is excluded")
                 excluded = True
         if included and not excluded:
             ret = True
@@ -53,9 +50,6 @@ class TestFilter:
     # Check if it is filtered out based on the keywords, case name (Return  True if to be run )
     def IsCaseIncluded(self, case):
         ret = False
-        # If no filter then run all automatically
-        if not self.include_list and not self.exclude_list:
-            return True
         # Get keywords
         keyword_list = None
         if case.keywords:
@@ -72,10 +66,10 @@ class TestFilter:
         excluded = False
         for key in keyword_list:
             if not self.include_list or key in self.include_list or key == self.ALWAYS:
-                Log.Log(Log.DEBUG, key + " is included")
+                Log.Log(Log.VERBOSE, key + " is included")
                 included = True
             if (self.exclude_list and key in self.exclude_list) or key == self.NO_RUN: 
-                Log.Log(Log.DEBUG, key + " is excluded")
+                Log.Log(Log.VERBOSE, key + " is excluded")
                 excluded = True
         if included and not excluded:
             ret = True

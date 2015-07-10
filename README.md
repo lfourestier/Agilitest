@@ -63,6 +63,7 @@ Reuse well-known tools and frameworks:
   - Junit
   - CppUnit
   - Cunit
+  - Pytest
   - ...
 - Written in Python
  - Multiplatform compatibility

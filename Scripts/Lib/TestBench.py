@@ -25,6 +25,7 @@ GTEST_EXT = "TestSuite.cpp"
 JUNIT_EXT = "TestSuite.java"
 CPPUNIT_EXT = "TestSuite.cpp"
 CUNIT_EXT = "TestSuite.c"
+PYTEST_EXT = "TestSuite.py"
 
 # Commands
 COMMAND_LIST = [TestGlobal.GTEST_TYPE, TestGlobal.JUNIT_TYPE, TestGlobal.CPPUNIT_TYPE, TestGlobal.CUNIT_TYPE]
@@ -47,14 +48,18 @@ JUNIT_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?@Test.*?(test\w+)\s*\(
 CUNIT_SUITE_REGEXP = "(@defgroup.*?)@\{"
 CUNIT_CASE_REGEXP_LIST = ["/\*\*[\s\*]+(@test.*?)\*/\s+.*?void\s+(test\w+)\s*\(\s*void\s*\)"]
 
+PYTEST_SUITE_REGEXP = "(@defgroup.*?)@\{"
+PYTEST_CASE_REGEXP_LIST = ["\#\#[\s\#]+(@test.*?)\s+def\s+(test_\w+)\s*\("]
+
 # The test bench class that provides test management functions
 class TestBench:
-    def __init__(self, dir_list, commands, include_list, exclude_list, report_file, synthesis_file):
+    def __init__(self, dir_list, commands, include_list, exclude_list, report_file, synthesis_file, filtered_report):
         self.dir_list = dir_list  # As list
         self.test_command = TestCommand(commands)  # As dictionary {gtest:blabla, junit:sdfsdf, ...}
         self.filter = TestFilter(include_list, exclude_list) # As list 
         self.report_file = report_file
         self.synthesis_file = synthesis_file
+        self.filtered_report = filtered_report
         self.test_report = None
         
         self.test_suite_dict = None
@@ -100,7 +105,10 @@ class TestBench:
     def GenerateReports(self):
         ret = OK
         print("### Generating reports...")
-        tr = TestReport(self.test_suite_dict, self.filter)
+        report_filter = None
+        if self.filtered_report:
+            report_filter = self.filter
+        tr = TestReport(self.test_suite_dict, report_filter)
         if self.report_file and self.report_file.endswith(".csv"):
             print("Test report: " + self.report_file)
             ret = tr.CreateCsvReport(self.report_file)
@@ -152,7 +160,7 @@ class TestBench:
     # Check if the file is a test suite (Ending with TestSuite.xxx)
     def CheckIsTestSuiteFile(self, file_content):
         file_str = str(file_content)
-        if file_str.endswith(GTEST_EXT) or file_str.endswith(CPPUNIT_EXT) or file_str.endswith(JUNIT_EXT) or file_str.endswith(CUNIT_EXT):
+        if file_str.endswith(GTEST_EXT) or file_str.endswith(CPPUNIT_EXT) or file_str.endswith(JUNIT_EXT) or file_str.endswith(CUNIT_EXT) or file_str.endswith(PYTEST_EXT):
             return OK 
         return ERROR
     
@@ -166,6 +174,9 @@ class TestBench:
             return TestGlobal.CPPUNIT_TYPE
         if self.SniffCunit(file_name):
             return TestGlobal.CUNIT_TYPE
+        if self.SniffPytest(file_name):
+            return TestGlobal.PYTEST_TYPE
+        # TODO Add Cppunit support
         
         return TestGlobal.NONE_TYPE
     
@@ -252,6 +263,24 @@ class TestBench:
             return True
         return False
     
+    # Sniff if it is Pytest
+    def SniffPytest(self, file_name):
+        confidence = 0
+        if file_name.endswith(PYTEST_EXT):
+            f = open(file_name)
+            content = f.read()
+            f.close()
+            if re.search("import pytest", content):
+                confidence = confidence + 3
+            if re.search("assert[ \t]+", content):
+                confidence = confidence + 4
+            if re.search("def[ \t]+test_\w+[ \t]*\(.*\)\:", content):
+                confidence = confidence + 5
+           
+        if confidence >= 5:
+            return True
+        return False
+    
     # Parse a test suite file to find test framework type
     def ParseFile(self, file_name):
         ret = OK
@@ -278,6 +307,9 @@ class TestBench:
         elif file_type == TestGlobal.CUNIT_TYPE:
             suite_regexp = CUNIT_SUITE_REGEXP
             case_regexp_list = CUNIT_CASE_REGEXP_LIST
+        elif file_type == TestGlobal.PYTEST_TYPE:
+            suite_regexp = PYTEST_SUITE_REGEXP
+            case_regexp_list = PYTEST_CASE_REGEXP_LIST
             # TODO Implement other framework
         else:
             Log.Log(Log.ERROR, "Unknown file type in ParseFileType!")
@@ -291,7 +323,7 @@ class TestBench:
         for m in re.finditer(suite_regexp, content, re.MULTILINE|re.DOTALL):
             if m != None and ts == None:
                 ts = TestSuite()
-#                 Log.Log(Log.DEBUG, "Suite: " + TestGlobal.StripCommentStars(m.group(1)))
+#                 Log.Log(Log.DEBUG, "Suite header: " + TestGlobal.StripCommentStars(m.group(1)))
                 ret = ts.ParseHeader(TestGlobal.StripCommentStars(m.group(1)))
                 if ret != OK:
                     break
@@ -318,7 +350,7 @@ class TestBench:
                     tc = TestCase()
                     tc.suite = ts # Add a backward link to the suite as well
                     tc.case =  m.group(2)
-#                     Log.Log(Log.DEBUG, "Case: " + TestGlobal.StripCommentStars(m.group(1)))
+#                     Log.Log(Log.DEBUG, "Case header: " + TestGlobal.StripCommentStars(m.group(1)))
                     ret = tc.ParseHeader(TestGlobal.StripCommentStars(m.group(1)))
                     if ret == OK:
                         # Add tc into ts

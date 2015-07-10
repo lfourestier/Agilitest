@@ -84,6 +84,12 @@ class TestCommand:
         tr = TestResult(tc.suite.type)
         if self.output:
             ret = tr.ParseOutput(self.output)
+            if tr.suite_name == "Unknown":
+                tr.suite_name = tc.suite.suite
+            if tr.case_name == "Unknown":
+                tr.case_name = tc.case
+            if tr.suite_name != tc.suite.suite or tr.case_name != tc.case:
+                Log.Log(Log.WARNING, "Test result looks incoherent compared to test case run. " + tr.suite_name + "!=" + tc.suite.suite + " or " + tr.case_name + "!=" + tc.case)
             if ret != OK:
                 return ret
         else:

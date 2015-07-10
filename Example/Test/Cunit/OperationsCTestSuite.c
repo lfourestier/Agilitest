@@ -61,7 +61,7 @@ void testMultiply(void)
  * @pre preconditions
  * @post post-conditions
  * @result expected results
- * @remarks regression,positive,NO_RUN
+ * @remarks regression,positive,not_implemented
  * @priority medium
  */
 void testPlannedButNotImplemented(void)

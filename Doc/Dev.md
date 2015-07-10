@@ -35,17 +35,19 @@ All RunTest python code is in Scripts/
  	
 ## Adding a new test framework
 
-RunTest currently support Gtest, CppUnit, Cunit and Junit frameworks.
+RunTest currently support Gtest, CppUnit, Cunit, Pytest and Junit frameworks.
 Here are the points to add new supports.
 
 What to change:
+ - TestGlobal.py - Add new test framework type (Ex: CUNIT_TYPE)
+ - Commands.cfg
+  * Add a new section for the new framework (As defined in TestGlobal.py)
  - TestBench.py 
-  * TestBench.SniffFile() - Add a new sniffer to detect the test suite type for that new framework (See SniffGtest, SniffJunit... as well)
+  * TestBench.CheckIsTestSuiteFile() - Add the new extension.
+  * TestBench.SniffFile() - Add a new sniffer to detect the test suite type for that new framework (For example, see SniffGtest, SniffJunit...)
   * XXX_SUITE_REGEXP - Add new regular expression to detect suite and case comments in the new framework format
   * XXX_CASE_REGEXP_LIST
   * TestBench.ParseFileType() - To use those new regular expressions
- - Commands.cfg
-  * To add a new section for the new framework
  - TestResult.py
   * TestResult.ParseOuput() - Add a new ouput parser for the framework
   * TestResult.ParseResult() - Potentially, add new result parser as well
