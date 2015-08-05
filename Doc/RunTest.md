@@ -1,5 +1,15 @@
 # RunTest usage
 
+##  RunTest concept
+
+- RunTest parses the test directories (See -d option) and searches the documented test suites and cases that are part of those directories. It makes a dictionary of all the test suites and cases. 
+- With that dictionary, it can then just create a test spec (with no results in) or run the tests and generate some test reports as well (See -r and -s options).
+- In order to do so, tests cases are run one by one, individually, and the intermediate result is parsed and collected into the final test report.
+- BUT it does not know how to run the test cases individually (It is project/platform dependent). You need to tell it how to run.
+	- You need to provide it a command file (See -c option)
+- You can also filter in and out some test suites and cases based on keywords or case names (See -i and -x options)
+
+
 ## RunTest commands
 
 	Usage: RunTest.py [options]

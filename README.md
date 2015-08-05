@@ -26,6 +26,8 @@ It can be called from a CI build system such as Jenkins to insure that any chang
 
 No need to maintain test specifications files, test sources, test reports, test synthesis anymore. It does it for you!
 
+See introduction in the [RunTest Documentation](Doc/RunTest.md).
+
 ### RunTest Philosophy:
 
 The RunTest philosophy is to simplify to the max the overheads:

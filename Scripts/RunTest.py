@@ -21,7 +21,11 @@ def generate_command_config(config_file):
     
 command_config_file = """# Free to use at your own responsibility
 #
-# Specify the commands to be applied for each test frameworks in order to run the tests one by one.
+# Specify the commands to be applied for each test frameworks in order to run the test cases one by one.
+#
+# RunTest parses the specified directories and make a dictionary of all the test cases to be potentially run. Then it will try to run them one by one, individually.
+# BUT it does not know how to run the test cases individually (It is project/platform dependent). You need to tell it how to run
+# test cases per supported framework.
 #
 # Supported framework so far:
 # Gtest
@@ -30,7 +34,7 @@ command_config_file = """# Free to use at your own responsibility
 # Cunit
 # Pytest
 #
-# @@ separated commands: 
+# ** A command is a @@ separated list of commands: 
 # "<command1> @@ <command2> @@ <command3>" and so on...
 # Where: 
 # <command> is a normal command line (Ex: echo "Hello world!")
@@ -42,7 +46,10 @@ command_config_file = """# Free to use at your own responsibility
 #
 # Commands are then run one after each other.
 #
-# After each test case run, the intermediate result file location is specified with the "result" param.
+# ** Intermediate result file:
+# As test cases are run one by one, each test result of each test case needs to be collected. That's the aim of this intermediate test result file.
+# After each test case run, RunTest will look for that file to parse the result of the test case. RunTest gathers them all in the final test report afterwards. 
+# the intermediate result file location is specified with the "result" param.
 # if not specified, only the output will be parsed.
 
 [Gtest]
