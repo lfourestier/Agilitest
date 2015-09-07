@@ -22,12 +22,13 @@ COMMAND_DELIMITER = "@@"
 COMMAND_SUITE_MACRO = "@SUITE"
 COMMAND_CASE_MACRO = "@CASE"
 COMMAND_RESULT_MACRO = "@RESULT"
-
+COMMAND_FILE_PATH_MACRO ="@PWD"
 
 # Define a test command
 class TestCommand:
-    def __init__(self, commands):
+    def __init__(self, commands, command_path):
         self.commands = commands
+        self.command_path = command_path
         self.output = None
 
     # Check commands validity
@@ -73,6 +74,10 @@ class TestCommand:
             commands = re.sub(COMMAND_RESULT_MACRO, result, commands)
         else:
             commands = re.sub(COMMAND_RESULT_MACRO, "", commands)
+        if self.command_path:
+            commands = re.sub(COMMAND_FILE_PATH_MACRO, self.command_path, commands)
+        else:
+            commands = re.sub(COMMAND_FILE_PATH_MACRO, "", commands)
             
         # Process
         ret = self.ProcessCommands(commands)

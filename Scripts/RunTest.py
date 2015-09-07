@@ -24,8 +24,13 @@ command_config_file = """# Free to use at your own responsibility
 # Specify the commands to be applied for each test frameworks in order to run the test cases one by one.
 #
 # RunTest parses the specified directories and make a dictionary of all the test cases to be potentially run. Then it will try to run them one by one, individually.
-# BUT it does not know how to run the test cases individually (It is project/platform dependent). You need to tell it how to run
+# BUT it does not know how to run the test cases individually because it is project/platform dependent. You need to tell it how to run
 # test cases per supported framework.
+# 
+# For instance, to run Gtest tests, you need to tell it how to call the previously compiled (Not part of RunTest responsibility) Gtest test application, that gives something like this: ./MyCompiledGtestApp
+# But it is still not enough, you need to specify how to run each test individually with the macros @SUITE and @CASE, that gives something like this: ./MyCompiledGtestApp --gtest_filter=@SUITE.@CASE
+# And even more, you need to specify where to store the intermediate test result for that single test so that RunTest can retrieve it and parse and make its overall report, that gives something like this: ./MyCompiledGtestApp --gtest_filter=@SUITE.@CASE --gtest_output=xml:@RESULT
+# Further, you can make the command based on the current command file directory, so that it can be path agnostic, that give something like this: @PWD/MyCompiledGtestApp --gtest_filter=@SUITE.@CASE --gtest_output=xml:@PWD/@RESULT
 #
 # Supported framework so far:
 # Gtest
@@ -42,7 +47,8 @@ command_config_file = """# Free to use at your own responsibility
 # @CASE will be replaced by the test case name
 # @SUITE will be replaced by the test suite name
 # @RESULT will be replaced by the result string specified in the optional "result" param.
-# Ex: "echo Run @CASE in @SUITE into @RESULT @@ echo Done"
+# @PWD will be replaced by the directory of that command file.
+# Ex: "echo Run @PWD/@SUITE.@CASE into @RESULT @@ echo Done"
 #
 # Commands are then run one after each other.
 #
@@ -51,26 +57,6 @@ command_config_file = """# Free to use at your own responsibility
 # After each test case run, RunTest will look for that file to parse the result of the test case. RunTest gathers them all in the final test report afterwards. 
 # the intermediate result file location is specified with the "result" param.
 # if not specified, only the output will be parsed.
-
-[Gtest]
-command = echo "Running Gtest: @SUITE.@CASE > @RESULT" @@ echo "Done!"
-result = result.xml
-
-[Junit]
-command = echo "Running Junit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
-result = result.xml
-
-[Cppunit]
-command = echo "Running Cppunit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
-result = result.xml
-
-[Cunit]
-command = echo "Running Cunit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
-result = result.xml
-
-[Pytest]
-command = echo "Running Pytest: @SUITE.@CASE > @RESULT" @@ echo "Done!"
-result = result.xml
 """
 
 # Main
@@ -130,6 +116,7 @@ def main():
     
     # Parse option file
     command_dict = dict()
+    command_path = os.path.dirname(os.path.abspath(options.commands)) # Get the path of the Commands.cfg file
     if options.commands:
         config = ConfigParser.ConfigParser()
         config.readfp(open(options.commands))
@@ -157,7 +144,7 @@ def main():
         filter_report = True
     
     # Create test bench
-    bench =  TestBench(dir_list, command_dict, include_list, exclude_list, options.report, options.synthesis, filter_report)
+    bench =  TestBench(dir_list, command_dict, command_path, include_list, exclude_list, options.report, options.synthesis, filter_report)
     
     # Parse tests
     ret = bench.Parse()

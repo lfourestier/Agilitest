@@ -53,9 +53,9 @@ PYTEST_CASE_REGEXP_LIST = ["\#\#[\s\#]+(@test.*?)\s+def\s+(test_\w+)\s*\("]
 
 # The test bench class that provides test management functions
 class TestBench:
-    def __init__(self, dir_list, commands, include_list, exclude_list, report_file, synthesis_file, filtered_report):
+    def __init__(self, dir_list, commands, command_path, include_list, exclude_list, report_file, synthesis_file, filtered_report):
         self.dir_list = dir_list  # As list
-        self.test_command = TestCommand(commands)  # As dictionary {gtest:blabla, junit:sdfsdf, ...}
+        self.test_command = TestCommand(commands, command_path)  # As dictionary {gtest:blabla, junit:sdfsdf, ...}
         self.filter = TestFilter(include_list, exclude_list) # As list 
         self.report_file = report_file
         self.synthesis_file = synthesis_file
