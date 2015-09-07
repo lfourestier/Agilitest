@@ -9,6 +9,8 @@
 #  @remarks functional,integration
 #  @{
 
+import sys
+
 ## @test Full test
 #  description of test_Add
 #  @pre preconditions
@@ -42,6 +44,16 @@ def test_PlannedButNotImplemented():
     assert 1 == 1, "Error message"
     return
 
+# Optional main
+def main():    
+    test_Add()
+    test_Multiply()
+#     test_PlannedButNotImplemented()
+    return 0
+
+# Call main
+if __name__ == "__main__":
+    sys.exit(main())
 
 ## @}
 

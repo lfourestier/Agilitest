@@ -53,23 +53,23 @@ command_config_file = """# Free to use at your own responsibility
 # if not specified, only the output will be parsed.
 
 [Gtest]
-command = echo "Run Gtest case @CASE in @SUITE into @RESULT" @@ echo "Done!"
+command = echo "Running Gtest: @SUITE.@CASE > @RESULT" @@ echo "Done!"
 result = result.xml
 
 [Junit]
-command = echo "Run Junit case @CASE in @SUITE into @RESULT" @@ echo "Done!"
+command = echo "Running Junit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
 result = result.xml
 
 [Cppunit]
-command = echo "Run Cppunit case @CASE in @SUITE into @RESULT" @@ echo "Done!"
+command = echo "Running Cppunit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
 result = result.xml
 
 [Cunit]
-command = echo "Run Cunit case @CASE in @SUITE into @RESULT" @@ echo "Done!"
+command = echo "Running Cunit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
 result = result.xml
 
-[Cunit]
-command = echo "Run Pytest case @CASE in @SUITE into @RESULT" @@ echo "Done!"
+[Pytest]
+command = echo "Running Pytest: @SUITE.@CASE > @RESULT" @@ echo "Done!"
 result = result.xml
 """
 
