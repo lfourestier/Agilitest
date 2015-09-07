@@ -57,6 +57,26 @@ command_config_file = """# Free to use at your own responsibility
 # After each test case run, RunTest will look for that file to parse the result of the test case. RunTest gathers them all in the final test report afterwards. 
 # the intermediate result file location is specified with the "result" param.
 # if not specified, only the output will be parsed.
+
+[Gtest]
+command = echo "Running Gtest: @SUITE.@CASE > @RESULT" @@ echo "Done!"
+result = result.xml
+
+[Junit]
+command = echo "Running Junit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
+result = result.xml
+
+[Cppunit]
+command = echo "Running Cppunit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
+result = result.xml
+
+[Cunit]
+command = echo "Running Cunit: @SUITE.@CASE > @RESULT" @@ echo "Done!"
+result = result.xml
+
+[Pytest]
+command = echo "Running Pytest: @SUITE.@CASE > @RESULT" @@ echo "Done!"
+result = result.xml
 """
 
 # Main
