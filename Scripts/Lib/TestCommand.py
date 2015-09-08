@@ -137,7 +137,7 @@ class TestCommand:
             Log.Log(Log.DEBUG, "Executing: " + cmd)
             args = shlex.split(cmd)
             try:
-                self.output += subprocess.check_output(args, shell=True)
+                self.output += subprocess.check_output(args)
             except subprocess.CalledProcessError as e:
                 self.output += '\n' + e.output
                 break
