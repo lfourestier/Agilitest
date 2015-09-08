@@ -15,14 +15,14 @@ ERROR = TestGlobal.ERROR
 NO_RUN = TestResult.NO_RUN
 
 
-REPORT_CSV_HEADER = "Suite,Case,Description,Priority,Type,Keywords,Preconditions,Postconditions,Expected,Status,Details,Time,Duration,"
+REPORT_CSV_HEADER = "Suite,Case,Description,Priority,Type,Keywords,Preconditions,Postconditions,Expected,Status,Details,Time,Duration"
 
-SYNTHESIS_CSV_HEADER = "Time,Specified,Run,Pass,Fail,Duration"
+SYNTHESIS_CSV_HEADER = "Time,Specified,Run,Pass,Fail,Duration,Tag"
 
 # Define a test report
 class TestReport:
     
-    def __init__(self, suite_dict, filter):
+    def __init__(self, tag, suite_dict, filter):
         self.suite_dict = suite_dict
         self.filter = filter
         self.number_test = 0
@@ -31,6 +31,10 @@ class TestReport:
         self.number_fail = 0
         self.timestamp = ""
         self.total_duration = 0.0
+        if tag:
+            self.tag = tag
+        else:
+            self.tag = " "
 
     # Create Junit XML file report
     def CreateJunitReport(self, file_name):
@@ -40,8 +44,8 @@ class TestReport:
     # Create CSV file report
     def CreateCsvReport(self, file_name):
         ret = OK
-        report_string = REPORT_CSV_HEADER + '\n'
         self.timestamp = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        report_string = str(self.tag) + ',' + str(self.timestamp) + '\n' + REPORT_CSV_HEADER + '\n'
         
         if not self.suite_dict:
             return ERROR
@@ -101,7 +105,7 @@ class TestReport:
                     duration = ""
 
                 
-                case_string = suite + ',' + case + ',' + description + ',' + priority + ',' + type + ',' + keywords + ',' + pre + ',' + post + ',' + expected + ',' + status + ',' + details + ',' + time + ',' + duration + ',' 
+                case_string = suite + ',' + case + ',' + description + ',' + priority + ',' + type + ',' + keywords + ',' + pre + ',' + post + ',' + expected + ',' + status + ',' + details + ',' + time + ',' + duration 
                 Log.Log(Log.DEBUG, case_string)
                 report_string += case_string  + '\n'
         
@@ -123,7 +127,7 @@ class TestReport:
         if self.number_run != (self.number_pass + self.number_fail):
             Log.Log(Log.WARNING, "Incoherences between numbers of test run, passed and failed!")
             
-        synthesis_string = self.timestamp + ',' + str(self.number_test) + ',' + str(self.number_run) + ',' + str(self.number_pass) + ',' + str(self.number_fail) + ',' + str(self.total_duration)
+        synthesis_string = self.timestamp + ',' + str(self.number_test) + ',' + str(self.number_run) + ',' + str(self.number_pass) + ',' + str(self.number_fail) + ',' + str(self.total_duration) + ',' + str(self.tag)
         Log.Log(Log.DEBUG, synthesis_string)
         
         if os.path.exists(file_name):

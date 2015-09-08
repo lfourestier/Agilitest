@@ -92,8 +92,8 @@ def main():
                       dest="directories", help="Specify the comma separated list of directory where to find test suite files to parser.",
                       action="store", default='.');
 
-    parser.add_option("-c", "--commands",
-                      dest="commands", help="Specify the command file to use for the test run. If not specified, no test will be run (Only parsed). See -g option to generate a template command file.",
+    parser.add_option("-c", "--command",
+                      dest="command", help="Specify the command file to use for the test run. If not specified, no test will be run (Only parsed). See -g option to generate a template command file.",
                       action="store");
 
     parser.add_option("-i", "--include",
@@ -122,7 +122,7 @@ def main():
 
     (options, args) = parser.parse_args()
     
-    # Generate template option file
+    # Generate template command file
     if options.generate == 1:
         commands = "Commands.cfg"
         if options.commands:
@@ -134,21 +134,6 @@ def main():
     dir_list = options.directories.split(',')
     Log.Log(Log.DEBUG, "Directory list = " + repr(dir_list))
     
-    # Parse option file
-    command_dict = dict()
-    command_path = os.path.dirname(os.path.abspath(options.commands)) # Get the path of the Commands.cfg file
-    if options.commands:
-        config = ConfigParser.ConfigParser()
-        config.readfp(open(options.commands))
-        for section in config.sections():
-            option_dict = dict()
-            for option in config.options(section):
-                option_dict[option] = config.get(section, option)
-            if option_dict:
-                command_dict[section] = option_dict
-            
-        Log.Log(Log.DEBUG, "Commands = " + repr(command_dict))
-        
     # Parse filters
     include_list = None
     if options.include:
@@ -162,9 +147,15 @@ def main():
     filter_report = False
     if options.filtered_report == 1:
         filter_report = True
+        
+    # Create the tag
+    tag = ""
+    for arg in sys.argv:
+        tag += arg + " "
+    Log.Log(Log.DEBUG, "Tag: " + tag)
     
     # Create test bench
-    bench =  TestBench(dir_list, command_dict, command_path, include_list, exclude_list, options.report, options.synthesis, filter_report)
+    bench =  TestBench(tag, dir_list, options.command, include_list, exclude_list, options.report, options.synthesis, filter_report)
     
     # Parse tests
     ret = bench.Parse()

@@ -7,6 +7,8 @@ import TestGlobal
 import Log
 import re
 import os
+import os.path
+import ConfigParser
 from TestResult import TestResult
 
 # Constant
@@ -26,27 +28,41 @@ COMMAND_FILE_PATH_MACRO ="@PWD"
 
 # Define a test command
 class TestCommand:
-    def __init__(self, commands, command_path):
-        self.commands = commands
-        self.command_path = command_path
+    def __init__(self, command_file):
         self.output = None
+        # Parse command file
+        if command_file:
+            self.command_path = os.path.dirname(os.path.abspath(command_file)) # Get the path of the Commands.cfg file for the @PWD macro replacement
+            self.command_dict = dict() # Create the command dictionary
+            config = ConfigParser.ConfigParser()
+            config.readfp(open(command_file))
+            for section in config.sections():
+                option_dict = dict()
+                for option in config.options(section):
+                    option_dict[option] = config.get(section, option)
+                if option_dict:
+                    self.command_dict[section] = option_dict
+        else:
+            self.command_path = None
+            self.command_dict = None
+        Log.Log(Log.DEBUG, "Command dictionary = " + repr(self.command_dict))
 
     # Check commands validity
     def CheckValidity(self):
         ret = OK
-        if not self.commands:
+        if not self.command_dict:
             Log.Log(Log.ERROR, "No commands to run test")
             return ERROR
         command_number = 0 # At least one is required
         for cmd in COMMAND_LIST:
-            if self.commands.has_key(cmd):
+            if self.command_dict.has_key(cmd):
                 command_number = command_number + 1
-                if not self.commands[cmd].has_key(COMMAND_COMMAND): # Mandatory
+                if not self.command_dict[cmd].has_key(COMMAND_COMMAND): # Mandatory
                     Log.Log(Log.ERROR, "Commands are not valid")
                     ret = ERROR
                     break
-#                 if not self.commands[cmd].has_key(COMMAND_RESULT):
-#                     self.commands[cmd][COMMAND_RESULT] = COMMAND_DEFAULT_RESULT
+#                 if not self.command_dict[cmd].has_key(COMMAND_RESULT):
+#                     self.command_dict[cmd][COMMAND_RESULT] = COMMAND_DEFAULT_RESULT
 #                     Log.Log(Log.WARNING, "Forced the intermediate result file for " + cmd + " to: " + COMMAND_DEFAULT_RESULT)
         if command_number <=0:
             ret = ERROR
@@ -55,8 +71,8 @@ class TestCommand:
     # Execute a test
     def ExecuteTest(self, tc):
         # Check if we have the commands for the suite type
-        if self.commands.has_key(tc.suite.type):
-            commands = self.commands[tc.suite.type][COMMAND_COMMAND]
+        if self.command_dict.has_key(tc.suite.type):
+            commands = self.command_dict[tc.suite.type][COMMAND_COMMAND]
             
         if not commands:
             Log.Log(Log.WARNING, "Do not have command for " + tc.suite.type + " suites.")
@@ -64,8 +80,8 @@ class TestCommand:
         
         # get intermediate result file location
         result = None
-        if self.commands[tc.suite.type].has_key(COMMAND_RESULT):
-            result = self.commands[tc.suite.type][COMMAND_RESULT]
+        if self.command_dict[tc.suite.type].has_key(COMMAND_RESULT):
+            result = self.command_dict[tc.suite.type][COMMAND_RESULT]
         
         # Substitute the macros in the command
         commands = re.sub(COMMAND_SUITE_MACRO, tc.suite.suite, commands)
