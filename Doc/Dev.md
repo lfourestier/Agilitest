@@ -20,9 +20,9 @@ All RunTest python code is in Scripts/
  	- TestCommand.py is the command parser and providers (See Commands.cfg). It provides:
  	 	- TestCommand.CheckValidity() to check commands validity in the .cfg file
  	 	- TestCommand.ExecuteTest() that execute a test case, finding the proper commands to apply to it
- 	- TestFilter.py is the filter class that provides:
- 	 	- TestFilter.IsSuiteIncluded() to check if a specific suite is part of the run and report
- 	 	- TestFilter.IsCaseIncluded() to check if a specific case is part of the run and report
+ 	- TestRules.py is the rule class that provides:
+ 	 	- TestRules.IsSuiteIncluded() to check if a specific suite is part of the run and report
+ 	 	- TestRules.IsCaseIncluded() to check if a specific case is part of the run and report
  	- TestResult.py is the result container class that provides result parsing. It provides:
  	 	- TestResult.ParseOutput() to parse command output and fill the result fields.
  	 	- TestResult.ParseResult() to parse intermediate result file (If generated) and fill the result fields.

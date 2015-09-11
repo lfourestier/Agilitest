@@ -18,6 +18,7 @@ import sys
 #  @result expected results
 #  @remarks negative,regression
 #  @priority medium
+#  @warning FIRST
 def test_Add():
     assert 0 == 1, "Error message"
     return
@@ -29,6 +30,7 @@ def test_Add():
 #  @result expected results
 #  @remarks negative,regression
 #  @priority medium
+#  @warning LAST
 def test_Multiply():
     assert 1 == 1, "Error message"
     return

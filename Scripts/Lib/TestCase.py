@@ -16,6 +16,7 @@ CASE_POST_REGEXP = "@post\s+(.*?)@\w+"
 CASE_RESULT_REGEXP = "@result\s+(.*?)@\w+"
 CASE_KEYWORDS_REGEXP = "@remarks\s+([\w, ]+)\s+@\w+"
 CASE_PRIORITY_REGEXP = "@priority\s+(.*?)@\w+"
+CASE_META_REGEXP = "@warning\s+(.*?)@\w+"
 
 # Define a test case
 class TestCase:
@@ -28,6 +29,7 @@ class TestCase:
         self.postconditions = None
         self.expected = None
         self.priority = None
+        self.meta = None
         self.test_case_result = None  # See TestResult
 
     # Parsing the Case header
@@ -60,12 +62,16 @@ class TestCase:
                 self.keywords = TestGlobal.StripWhiteSpaces(n.group(1))
             else:
                 Log.Log(Log.WARNING, "Missing keywords for " + self.suite.suite + "." + self.case + ". Test will be ignored while running!")
-                    
-                
+
             n = re.search(CASE_PRIORITY_REGEXP, header, re.MULTILINE|re.DOTALL)
             if n != None:
 #                 Log.Log(Log.DEBUG, "case.keywords: " + n.group(0))
                 self.priority = n.group(1)
+                
+            n = re.search(CASE_META_REGEXP, header, re.MULTILINE|re.DOTALL)
+            if n != None:
+#                 Log.Log(Log.DEBUG, "case.meta: " + n.group(0))
+                self.meta = TestGlobal.StripWhiteSpaces(n.group(1))
         else:
             ret = ERROR
         return ret

@@ -5,7 +5,7 @@ import datetime
 import os.path
 import TestGlobal
 import Log
-from TestFilter import TestFilter
+from TestRules import TestRules
 from TestResult import TestResult
 
 # Constant
@@ -22,9 +22,12 @@ SYNTHESIS_CSV_HEADER = "Time,Specified,Run,Pass,Fail,Duration,Tag"
 # Define a test report
 class TestReport:
     
-    def __init__(self, tag, suite_dict, filter):
+    def __init__(self, tag, suite_dict, rules):
         self.suite_dict = suite_dict
-        self.filter = filter
+        if rules:
+            self.rules = rules
+        else:
+            self.rules = TestRules(None, None)
         self.number_test = 0
         self.number_run = 0
         self.number_pass = 0
@@ -54,7 +57,7 @@ class TestReport:
         case = ""
         description = ""
         priority = ""
-        type = ""
+        suite_type = ""
         keywords = ""
         pre = ""
         post = ""
@@ -67,15 +70,15 @@ class TestReport:
         Log.Log(Log.DEBUG, "Creating CSV report: " + file_name)
         for s in self.suite_dict:
             ts = self.suite_dict[s]
-            if self.filter and not self.filter.IsSuiteIncluded(ts):
+            if not self.rules.IsSuiteIncluded(ts) or self.rules.IsSuiteIgnored(ts):
                 continue
             suite = TestGlobal.StripComas(ts.suite)
-            type = TestGlobal.StripComas(ts.type)
+            suite_type = TestGlobal.StripComas(ts.type)
             if not ts.test_case_dict:
                 continue
             for c in ts.test_case_dict:
                 tc = ts.test_case_dict[c]
-                if self.filter and not self.filter.IsCaseIncluded(tc):
+                if not self.rules.IsCaseIncluded(tc) or self.rules.IsCaseIgnored(tc):
                     continue
                 self.number_test += 1
                 case = TestGlobal.StripComas(tc.case)
@@ -105,7 +108,7 @@ class TestReport:
                     duration = ""
 
                 
-                case_string = suite + ',' + case + ',' + description + ',' + priority + ',' + type + ',' + keywords + ',' + pre + ',' + post + ',' + expected + ',' + status + ',' + details + ',' + time + ',' + duration 
+                case_string = suite + ',' + case + ',' + description + ',' + priority + ',' + suite_type + ',' + keywords + ',' + pre + ',' + post + ',' + expected + ',' + status + ',' + details + ',' + time + ',' + duration 
                 Log.Log(Log.DEBUG, case_string)
                 report_string += case_string  + '\n'
         

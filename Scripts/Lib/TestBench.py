@@ -11,7 +11,7 @@ import Log
 import TestGlobal
 from TestSuite import TestSuite
 from TestCase import TestCase
-from TestFilter import TestFilter
+from TestRules import TestRules
 from TestResult import TestResult
 from TestReport import TestReport
 from TestCommand import TestCommand
@@ -57,7 +57,7 @@ class TestBench:
         self.tag = tag # Tag this testBench with a string
         self.dir_list = dir_list  # As list
         self.test_command = TestCommand(command_file)  # As dictionary {gtest:blabla, junit:sdfsdf, ...}
-        self.filter = TestFilter(include_list, exclude_list) # As list 
+        self.rules = TestRules(include_list, exclude_list) # As list 
         self.report_file = report_file
         self.synthesis_file = synthesis_file
         self.filtered_report = filtered_report
@@ -108,7 +108,7 @@ class TestBench:
         print("### Generating reports...")
         report_filter = None
         if self.filtered_report:
-            report_filter = self.filter
+            report_filter = self.rules
         tr = TestReport(self.tag, self.test_suite_dict, report_filter)
         if self.report_file and self.report_file.endswith(".csv"):
             print("Test report: " + self.report_file)
@@ -384,24 +384,33 @@ class TestBench:
     
     # Run a single test suite
     def RunSuite(self, ts):
-        # Check if included (or excluded)
-        if not self.filter.IsSuiteIncluded(ts):
+        # Check if included (or excluded or ignored)
+        if not self.rules.IsSuiteIncluded(ts):
             return OK
         
         Log.Log(Log.DEBUG, "Running " + ts.type + " suite: " + ts.suite)
         ret = OK
         
-        # Then run the cases    
-        for case in ts.test_case_dict:
-            ret = self.RunCase(ts.test_case_dict[case])
-            if ret != OK:
-                break
+        # Then run the cases 
+        tc = self.rules.GetFirstCase(ts)
+        if tc:
+            ret = self.RunCase(tc)
+        if ret == OK:   
+            for case in ts.test_case_dict:
+                if self.rules.IsCaseNotFirstAndNotLast(ts.test_case_dict[case]):
+                    ret = self.RunCase(ts.test_case_dict[case])
+                if ret != OK:
+                    break
+        if ret == OK:
+            tc = self.rules.GetLastCase(ts)
+            if tc:
+                ret = self.RunCase(tc)
         return ret
 
     # Run a single test case
     def RunCase(self, tc):
-        # Check if included (or excluded)
-        if not self.filter.IsCaseIncluded(tc):
+        # Check if included (or excluded or ignored)
+        if not self.rules.IsCaseIncluded(tc):
             return OK
         
         print(tc.suite.suite + "." + tc.case)

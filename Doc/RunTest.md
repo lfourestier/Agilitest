@@ -98,6 +98,7 @@ Notes: The doxygen tags are used with '@' prefix only.
 	 * @defgroup xxxxTestSuite xxxxTestSuite
 	 * This is a test suite description.
 	 * @remarks regression,system
+	 * @warning IGNORE
 	 *  @{
 	 */
 	 
@@ -112,6 +113,9 @@ Notes: The comment tags (Ie: "/*" or "//" or "#") are language dependent. Here i
 * @defgroup is used to specify the suite name
 * Followed, the line below, by the test sute description
 * @remarks tag is used for the filtering keywords (a coma separated list of keywords used to filter the tests)
+* @warning is used to give meta information (Rules) for RunTest to run properly the suite/case. Supported meta-information: 
+    * EXCLUDE = suite is excluded from the test run
+    * IGNORE = suite is totally ignored by RunTest even in the spec/report
 
 ### Case documentation
 
@@ -123,6 +127,7 @@ Notes: The comment tags (Ie: "/*" or "//" or "#") are language dependent. Here i
 	 * @result expected results
 	 * @remarks regression,system,integration,negative
 	 * @priority medium
+	 * @warning LAST,IGNORE
 	 */
 
 Notes: The comment tags (Ie: "/*" or "//" or "#") are language dependent. Here is a C/C++ example!
@@ -133,6 +138,11 @@ Notes: The comment tags (Ie: "/*" or "//" or "#") are language dependent. Here i
 * @result is used for the expected result description
 * @remarks tag is used for the filtering keywords (a coma separated list of keywords used to filter the tests)
 * @priority (Not doxygen compatible) is used to given to some priority flavor to the test suite or case (ex: low, medium, high OR 1, 2, 3..., as you want!).
+* @warning is used to give meta information (Rules) for RunTest to run properly the suite/case. Supported meta-information: 
+    * FIRST = test to be executed first in the suite.
+    * LAST = test to be executed last.
+    * EXCLUDE = test is excluded from the test run
+    * IGNORE = test is totally ignored by RunTest even in the spec/report
 
 ## RunTest command file
 

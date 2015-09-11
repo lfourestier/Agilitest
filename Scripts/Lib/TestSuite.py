@@ -12,6 +12,7 @@ ERROR = TestGlobal.ERROR
 # Suite fields
 SUITE_DESCRIPTION_REGEXP = "@defgroup\s+(\w+)\s+(\w+)\s+(.*?)@\w+"
 SUITE_KEYWORDS_REGEXP = "@remarks\s+([\w, ]+)\s.*?@\w+"
+SUITE_META_REGEXP = "@warning\s+([\w, ]+)\s.*?@\w+"
 
 # Define a test suite
 class TestSuite:
@@ -20,6 +21,7 @@ class TestSuite:
         self.description = None
         self.type = None  # Cppunit, Gtest
         self.keywords = None
+        self.meta = None
         self.test_case_dict = None  # Test case dictionary (See TestCase)
 
     # Parsing the Suite header
@@ -31,6 +33,10 @@ class TestSuite:
 #             Log.Log(Log.DEBUG, "Suite.description: " + m.group(0))
             self.suite = m.group(2)
             self.description = TestGlobal.StripCommentStars(m.group(3))
+            n = re.search(SUITE_META_REGEXP, header, re.MULTILINE|re.DOTALL)
+            if n != None:
+#                 Log.Log(Log.DEBUG, "Suite.meta: " + n.group(0))
+                self.meta = TestGlobal.StripWhiteSpaces(n.group(1))
             n = re.search(SUITE_KEYWORDS_REGEXP, header, re.MULTILINE|re.DOTALL)
             if n != None:
 #                 Log.Log(Log.DEBUG, "Suite.keywords: " + n.group(0))
