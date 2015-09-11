@@ -83,7 +83,7 @@ result = result.xml
 def main():
 #     print "# RunTest #"
     
-    Log.SetLevels([Log.ERROR, Log.WARNING, Log.DEBUG])
+#     Log.SetLevels([Log.ERROR, Log.WARNING, Log.DEBUG])
     
     # Parse options
     parser = optparse.OptionParser()

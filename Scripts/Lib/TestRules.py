@@ -125,7 +125,7 @@ class TestRules:
                 ignored = True
         if ignored:
             ret = True
-        Log.Log(Log.DEBUG, "Case " + case.suite + " ignored: " + str(ret))
+        Log.Log(Log.DEBUG, "Case " + case.case + " ignored: " + str(ret))
         return ret
     
     # get the first test case to run
@@ -134,7 +134,7 @@ class TestRules:
         for case in suite.test_case_dict:
             meta_info_list = None 
             if suite.test_case_dict[case].meta:
-                meta_info_list = case.meta.split(',')
+                meta_info_list = suite.test_case_dict[case].meta.split(',')
             if meta_info_list and self.FIRST in meta_info_list:
                 ret = suite.test_case_dict[case]
                 break
@@ -146,7 +146,7 @@ class TestRules:
         for case in suite.test_case_dict:
             meta_info_list = None 
             if suite.test_case_dict[case].meta:
-                meta_info_list = case.meta.split(',')
+                meta_info_list = suite.test_case_dict[case].meta.split(',')
             if meta_info_list and self.LAST in meta_info_list:
                 ret = suite.test_case_dict[case]
                 break
