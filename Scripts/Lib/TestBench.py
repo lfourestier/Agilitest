@@ -344,9 +344,11 @@ class TestBench:
         ts.test_case_dict = dict()
         
         # Parsing Case descriptions
-        ret = ERROR
+        ret = OK
+        found_case = False
         for case_regexp in case_regexp_list:
             for m in re.finditer(case_regexp, content, re.MULTILINE|re.DOTALL):
+                found_case = True
                 if m != None:
                     tc = TestCase()
                     tc.suite = ts # Add a backward link to the suite as well
@@ -366,6 +368,9 @@ class TestBench:
                     Log.Log(Log.WARNING, "No test cases in test suite!")
                     ret = ERROR
                     break
+                
+        if not found_case:
+            Log.Log(Log.WARNING, "No test cases in test suite!")
             
         # Add ts to class dictionary
         if not self.test_suite_dict:
